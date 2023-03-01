@@ -1,0 +1,17 @@
+[settings]
+show_hints = true
+paper_size = "A4"
+
+[[questions]]
+question = "Is this statement true: \"PDF sucks\"?"
+correct = ["yes"]
+incorrect = ["no"]
+
+[[questions]]
+question = "A longer question with selection answers!"
+correct = ["yes", "ye"]
+incorrect = ["no", "nah"]
+points = 2
+
+[[questions]]
+question = "Why tho?"
