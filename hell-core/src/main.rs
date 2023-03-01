@@ -7,7 +7,8 @@ mod data;
 use data::{PaperSize, Project};
 
 use printpdf::{
-    IndirectFontRef, Mm, PdfDocument, PdfDocumentReference, PdfLayerIndex, PdfPageIndex,
+    IndirectFontRef, Mm, PdfDocument,
+    PdfDocumentReference, PdfLayerIndex, PdfLayerReference, PdfPageIndex,
 };
 use rand::seq::SliceRandom;
 
@@ -79,14 +80,17 @@ impl PDFBuilder {
         }
     }
 
+    fn get_layer(&self) -> PdfLayerReference {
+        let (page, layer) = self.current_page;
+        self.document.get_page(page).get_layer(layer)
+    }
+
     fn get_external_font(&self, path: &str) -> anyhow::Result<IndirectFontRef> {
         Ok(self.document.add_external_font(File::open(path)?)?)
     }
 
     fn write_text(&self, text: &str, font: &IndirectFontRef, font_size: f64) {
-        let (page, layer) = self.current_page;
-        let current_layer = self.document.get_page(page).get_layer(layer);
-
+        let current_layer = self.get_layer();
         current_layer.set_font(font, font_size);
         current_layer.set_line_height(font_size);
         current_layer.write_text(text, &font);
@@ -96,9 +100,17 @@ impl PDFBuilder {
         self.line_break();
     }
 
+    fn draw_input_line(&self, font: &IndirectFontRef, lines: usize) {
+        // TODO: this is retarded, it should be fixed
+        for _ in 0..lines {
+            self.line_break();
+            self.write_line(".................................................................................................................", font, 8.0);
+            self.line_break();
+        }
+    }
+
     fn line_break(&self) {
-        let (page, layer) = self.current_page;
-        let current_layer = self.document.get_page(page).get_layer(layer);
+        let current_layer = self.get_layer();
         current_layer.add_line_break();
     }
 
@@ -113,15 +125,21 @@ impl PDFBuilder {
 fn main() {
     let project = fs::read_to_string("example.toml").unwrap();
     let project: Project = toml::from_str(&project).unwrap();
+    dbg!(&project.settings);
 
     let pdf_builder = PDFBuilder::new("Test", &project.settings.paper_size);
     let monospace = pdf_builder
         .get_external_font("./assets/fonts/monospace.ttf")
         .unwrap();
 
-    for question in project.questions {
+    for (qi, question) in project.questions.iter().enumerate() {
         let title = question.get_title();
-        pdf_builder.write_line(title, &monospace, 12.0);
+        let points = question.get_points();
+        pdf_builder.write_line(
+            &format!("{}. {} ({}pt)", qi + 1, title, points),
+            &monospace,
+            12.0,
+        );
 
         let mut rng = rand::thread_rng();
 
@@ -149,7 +167,7 @@ fn main() {
                 }
             }
             data::Question::Input(_) => {
-                pdf_builder.write_line("______________________________", &monospace, 12.0);
+                pdf_builder.draw_input_line(&monospace, 4);
             }
         }
 

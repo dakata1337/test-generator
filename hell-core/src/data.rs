@@ -38,6 +38,12 @@ impl Question {
             Question::Input(q) => &q.question,
         }
     }
+    pub fn get_points(&self) -> u8 {
+        match self {
+            Question::Selection(q) => q.points,
+            Question::Input(q) => q.points,
+        }
+    }
 }
 
 #[allow(dead_code)]
