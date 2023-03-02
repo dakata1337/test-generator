@@ -1,3 +1,4 @@
+use rckive_genpdf::Size;
 use serde::Deserialize;
 
 const fn default_points() -> u8 {
@@ -21,6 +22,7 @@ pub struct SelectionQuestion {
 #[derive(Debug, Deserialize)]
 pub struct InputQuestion {
     pub question: String,
+    pub number_of_lines: u16,
     #[serde(default = "default_points")]
     pub points: u8,
 }
@@ -41,14 +43,19 @@ impl Question {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone, Copy)]
 pub enum PaperSize {
     A4,
 }
-impl PaperSize {
-    pub fn get_pdf_size(&self) -> (f64, f64) {
-        match self {
+impl Into<Size> for PaperSize {
+    fn into(self) -> Size {
+        let (w, h) = match self {
             PaperSize::A4 => (210.0, 297.0),
+        };
+
+        Size {
+            width: w.into(),
+            height: h.into(),
         }
     }
 }

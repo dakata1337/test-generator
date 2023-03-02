@@ -15,3 +15,8 @@ points = 2
 
 [[questions]]
 question = "Why tho?"
+number_of_lines = 4
+
+[[questions]]
+question = "LOL"
+number_of_lines = 2
