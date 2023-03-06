@@ -2,6 +2,8 @@
 show_hints = true
 paper_size = "A4"
 language = "Bulgarian"
+fonts_path = "./assets/fonts"
+font = "TimesNewRoman"
 
 [[questions]]
 question = "Is this statement true: \"PDF sucks\"?"

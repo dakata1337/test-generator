@@ -112,6 +112,8 @@ pub struct Settings {
     pub paper_size: PaperSize,
     #[serde(default)]
     pub language: Language,
+    pub fonts_path: String,
+    pub font: String,
 }
 
 #[allow(dead_code)]

@@ -75,8 +75,12 @@ fn main() {
     let project = fs::read_to_string("example.toml").unwrap();
     let project: Project = toml::from_str(&project).unwrap();
 
-    let font_family = rckive_genpdf::fonts::from_files("./assets/fonts", "TimesNewRoman", None)
-        .expect("Failed to load font family");
+    let font_family = rckive_genpdf::fonts::from_files(
+        &project.settings.fonts_path,
+        &project.settings.font,
+        None,
+    )
+    .expect("Failed to load font family");
 
     let mut doc = rckive_genpdf::Document::new(font_family);
     doc.set_paper_size(project.settings.paper_size);
