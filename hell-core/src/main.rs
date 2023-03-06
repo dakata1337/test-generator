@@ -2,7 +2,7 @@ use std::{fs, time::Instant};
 
 use rand::seq::SliceRandom;
 use rckive_genpdf::{
-    elements::{Break, PaddedElement, Text},
+    elements::{Break, PaddedElement, Paragraph, Text},
     Document, Margins,
 };
 
@@ -17,8 +17,14 @@ fn gen_questions(doc: &mut Document, project: &Project) {
     let language = project.settings.language.clone();
 
     for (i, question) in project.questions.iter().enumerate() {
+        // TODO: this needs a rework its fucking stupid!
         let title = question.get_title();
-        let title = format!("{}. {}", i + 1, title);
+        let title = format!(
+            "{}. {} [{}]",
+            i + 1,
+            title,
+            language.format_points(*question.get_points())
+        );
 
         match question {
             Question::Selection(question) => {
@@ -31,7 +37,7 @@ fn gen_questions(doc: &mut Document, project: &Project) {
                     }
                     _ => title,
                 };
-                doc.push(Text::new(title));
+                doc.push(Paragraph::new(title));
 
                 let mut questions = question.correct.clone();
                 questions.append(&mut question.incorrect.clone());
@@ -44,7 +50,7 @@ fn gen_questions(doc: &mut Document, project: &Project) {
                 doc.push(list);
             }
             Question::Input(question) => {
-                doc.push(Text::new(title));
+                doc.push(Paragraph::new(title));
                 doc.push(Break::new(0.5));
                 for _ in 0..question.number_of_lines {
                     #[rustfmt::skip]
@@ -66,7 +72,7 @@ fn main() {
     let project = fs::read_to_string("example.toml").unwrap();
     let project: Project = toml::from_str(&project).unwrap();
 
-    let font_family = rckive_genpdf::fonts::from_files("./assets/fonts", "monospace", None)
+    let font_family = rckive_genpdf::fonts::from_files("./assets/fonts", "TimesNewRoman", None)
         .expect("Failed to load font family");
 
     let mut doc = rckive_genpdf::Document::new(font_family);

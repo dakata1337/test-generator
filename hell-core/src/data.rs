@@ -40,6 +40,13 @@ impl Question {
             Question::Input(q) => &q.question,
         }
     }
+
+    pub fn get_points(&self) -> &u8 {
+        match self {
+            Question::Selection(q) => &q.points,
+            Question::Input(q) => &q.points,
+        }
+    }
 }
 
 #[allow(dead_code)]
@@ -84,6 +91,15 @@ impl Language {
         match self {
             Language::English => "Multiple answers",
             Language::Bulgarian => "Повече от 1 верен отговор",
+        }
+    }
+    #[inline]
+    pub fn format_points(&self, points: u8) -> String {
+        match self {
+            Language::English if points == 1 => format!("{points} pt"),
+            Language::English => format!("{points} pts"),
+            Language::Bulgarian if points == 1 => format!("{points} точка"),
+            Language::Bulgarian => format!("{points} точки"),
         }
     }
 }
