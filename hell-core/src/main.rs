@@ -66,6 +66,9 @@ fn gen_questions(doc: &mut Document, project: &Project) {
     }
 }
 
+// TODO: format questions strings (using markdown syntax)
+// TODO: create header, title, test subject
+// TODO: create student fields for: name, class etc.
 fn main() {
     let start = Instant::now();
 
@@ -88,5 +91,12 @@ fn main() {
     doc.render_to_file("output.pdf")
         .expect("Failed to write PDF file");
 
-    println!("Pdf generation took {:?}", start.elapsed());
+    print!("\x1b[1mPdf generation took: ");
+    match start.elapsed().as_millis() {
+        time if time < 12 => print!("\x1b[32m"),
+        time if time < 16 => print!("\x1b[33m"),
+        _ => print!("\x1b[31m"),
+    }
+    println!("{:?}", start.elapsed());
+    print!("\x1b[0m");
 }
