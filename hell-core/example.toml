@@ -1,6 +1,7 @@
 [settings]
 show_hints = true
 paper_size = "A4"
+language = "Bulgarian"
 
 [[questions]]
 question = "Is this statement true: \"PDF sucks\"?"

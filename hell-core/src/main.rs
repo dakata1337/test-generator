@@ -1,43 +1,23 @@
 use std::{fs, time::Instant};
 
-mod data;
-use data::{Project, Question};
 use rand::seq::SliceRandom;
 use rckive_genpdf::{
-    elements::{Break, OrderedList, PaddedElement, Text},
-    Document, Element, Margins, Position, RenderResult,
+    elements::{Break, PaddedElement, Text},
+    Document, Margins,
 };
 
-struct DottedLine;
-impl Element for DottedLine {
-    fn render(
-        &mut self,
-        context: &rckive_genpdf::Context,
-        area: rckive_genpdf::render::Area<'_>,
-        style: rckive_genpdf::style::Style,
-    ) -> Result<rckive_genpdf::RenderResult, rckive_genpdf::error::Error> {
-        let mut result = RenderResult::default();
+mod data;
+use data::{Project, Question};
 
-        let width_per_ch = style.char_width(&context.font_cache, '.');
-        let n_chars = area.size().width / f64::from(width_per_ch);
-
-        area.print_str(
-            &context.font_cache,
-            Position::default(),
-            style,
-            ".".repeat(f64::from(n_chars) as usize),
-        )?;
-
-        let line_height = style.line_height(&context.font_cache);
-        result.size.height = line_height;
-        Ok(result)
-    }
-}
+mod elements;
+use elements::{AlphabeticOrderedList, DottedLine};
 
 fn gen_questions(doc: &mut Document, project: &Project) {
+    let language = project.settings.language.clone();
+
     for (i, question) in project.questions.iter().enumerate() {
         let title = question.get_title();
-        doc.push(Text::new(format!("{}. {}", i+1, title)));
+        doc.push(Text::new(format!("{}. {}", i + 1, title)));
 
         let mut rng = rand::thread_rng();
 
@@ -49,7 +29,7 @@ fn gen_questions(doc: &mut Document, project: &Project) {
                 questions.append(&mut question.incorrect.clone());
                 questions.shuffle(&mut rng);
 
-                let mut list = OrderedList::new();
+                let mut list = AlphabeticOrderedList::new(language.get_first_char());
                 for answer in questions {
                     list.push(Text::new(answer))
                 }

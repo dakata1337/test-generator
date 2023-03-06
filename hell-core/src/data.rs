@@ -61,11 +61,34 @@ impl Into<Size> for PaperSize {
 }
 
 #[allow(dead_code)]
+#[derive(Debug, Deserialize, Clone, Copy)]
+pub enum Language {
+    English,
+    Bulgarian,
+}
+impl Default for Language {
+    fn default() -> Self {
+        Self::English
+    }
+}
+impl Language {
+    #[inline]
+    pub fn get_first_char(self) -> char {
+        match self {
+            Language::English => 'a',
+            Language::Bulgarian => 'а',
+        }
+    }
+}
+
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Settings {
     #[serde(default = "default_bool_true")]
     pub show_hints: bool,
     pub paper_size: PaperSize,
+    #[serde(default)]
+    pub language: Language,
 }
 
 #[allow(dead_code)]
