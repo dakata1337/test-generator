@@ -73,10 +73,17 @@ impl Default for Language {
 }
 impl Language {
     #[inline]
-    pub fn get_first_char(self) -> char {
+    pub fn get_first_char(&self) -> char {
         match self {
             Language::English => 'a',
             Language::Bulgarian => 'а',
+        }
+    }
+    #[inline]
+    pub fn multiple_answers_hint(&self) -> &str {
+        match self {
+            Language::English => "Multiple answers",
+            Language::Bulgarian => "Повече от 1 верен отговор",
         }
     }
 }

@@ -19,5 +19,7 @@ question = "Why tho?"
 number_of_lines = 4
 
 [[questions]]
-question = "LOL"
-number_of_lines = 2
+question = "Lots of answers"
+correct = ["yes", "ye", "yup", "yessir", "da"]
+incorrect = ["no", "nah", "nope", "nosir", "ne"]
+points = 2

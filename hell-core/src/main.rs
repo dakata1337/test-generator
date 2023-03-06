@@ -13,18 +13,26 @@ mod elements;
 use elements::{AlphabeticOrderedList, DottedLine};
 
 fn gen_questions(doc: &mut Document, project: &Project) {
+    let mut rng = rand::thread_rng();
     let language = project.settings.language.clone();
 
     for (i, question) in project.questions.iter().enumerate() {
         let title = question.get_title();
-        doc.push(Text::new(format!("{}. {}", i + 1, title)));
+        let title = format!("{}. {}", i + 1, title);
 
-        let mut rng = rand::thread_rng();
-
-        // TODO: check if `show_hints` is enabled and print a warning
-        // about questions with multiple answers
         match question {
             Question::Selection(question) => {
+                let title = match question {
+                    q if q.correct.len() + q.incorrect.len() > 16 => {
+                        panic!("Question #{} has too many answers!", i + 1)
+                    }
+                    q if q.correct.len() > 1 => {
+                        format!("{} ({})", title, language.multiple_answers_hint())
+                    }
+                    _ => title,
+                };
+                doc.push(Text::new(title));
+
                 let mut questions = question.correct.clone();
                 questions.append(&mut question.incorrect.clone());
                 questions.shuffle(&mut rng);
@@ -36,6 +44,7 @@ fn gen_questions(doc: &mut Document, project: &Project) {
                 doc.push(list);
             }
             Question::Input(question) => {
+                doc.push(Text::new(title));
                 doc.push(Break::new(0.5));
                 for _ in 0..question.number_of_lines {
                     #[rustfmt::skip]
