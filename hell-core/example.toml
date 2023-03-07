@@ -5,6 +5,9 @@ language = "Bulgarian"
 fonts_path = "./assets/fonts"
 font = "TimesNewRoman"
 
+[header]
+title = "Test of the test"
+
 [[questions]]
 question = "Is this statement true: \"PDF sucks\"?"
 correct = ["yes"]
@@ -28,5 +31,5 @@ points = 2
 
 [[questions]]
 correct = ["1"]
-incorrect = ["2"]
+incorrect = ["2", "3"]
 question = "word word word word word word word word word word word word word word word word word word word word word"

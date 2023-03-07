@@ -96,10 +96,23 @@ impl Language {
     #[inline]
     pub fn format_points(&self, points: u8) -> String {
         match self {
-            Language::English if points == 1 => format!("{points} pt"),
-            Language::English => format!("{points} pts"),
-            Language::Bulgarian if points == 1 => format!("{points} точка"),
-            Language::Bulgarian => format!("{points} точки"),
+            Language::English => format!("__/{points}pt"),
+            Language::Bulgarian => format!("__/{points}т"),
+        }
+    }
+    #[inline]
+    pub fn input_name(&self) -> &str {
+        match self {
+            Language::English => "Name",
+            Language::Bulgarian => "Име",
+        }
+    }
+
+    #[inline]
+    pub fn input_class(&self) -> &str {
+        match self {
+            Language::English => "Class",
+            Language::Bulgarian => "Клас",
         }
     }
 }
@@ -118,7 +131,14 @@ pub struct Settings {
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
+pub struct Header {
+    pub title: String,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Deserialize)]
 pub struct Project {
     pub settings: Settings,
+    pub header: Header,
     pub questions: Vec<Question>,
 }

@@ -71,14 +71,15 @@ impl Element for DottedLine {
     }
 }
 
+pub type DynElem = Box<dyn Element>;
 pub struct SplitElement {
-    left: Box<dyn Element>,
-    right: Box<dyn Element>,
+    left: DynElem,
+    right: DynElem,
     split_size: f64,
 }
 
 impl SplitElement {
-    pub fn new(left: Box<dyn Element>, right: Box<dyn Element>, split_size: f64) -> Self {
+    pub fn new(left: DynElem, right: DynElem, split_size: f64) -> Self {
         Self {
             left: left.into(),
             right: right.into(),
