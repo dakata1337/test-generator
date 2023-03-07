@@ -70,3 +70,39 @@ impl Element for DottedLine {
         Ok(result)
     }
 }
+
+pub struct SplitElement {
+    left: Box<dyn Element>,
+    right: Box<dyn Element>,
+    split_size: f64,
+}
+
+impl SplitElement {
+    pub fn new(left: Box<dyn Element>, right: Box<dyn Element>, split_size: f64) -> Self {
+        Self {
+            left: left.into(),
+            right: right.into(),
+            split_size,
+        }
+    }
+}
+
+impl Element for SplitElement {
+    fn render(
+        &mut self,
+        context: &Context,
+        area: render::Area<'_>,
+        style: rckive_genpdf::style::Style,
+    ) -> Result<RenderResult, rckive_genpdf::error::Error> {
+        let left_width = area.size().width * self.split_size;
+
+        let mut left = area.clone();
+        left.set_width(left_width);
+        let mut right = area.clone();
+        right.add_offset(Position::new(left_width, 0.0));
+
+        let left = self.left.render(context, left, style);
+        _ = self.right.render(context, right, style);
+        left
+    }
+}

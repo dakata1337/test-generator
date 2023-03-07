@@ -25,3 +25,8 @@ question = "Lots of answers"
 correct = ["yes", "ye", "yup", "yessir", "da"]
 incorrect = ["no", "nah", "nope", "nosir", "ne"]
 points = 2
+
+[[questions]]
+correct = ["1"]
+incorrect = ["2"]
+question = "word word word word word word word word word word word word word word word word word word word word word"

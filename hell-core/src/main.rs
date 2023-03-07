@@ -3,42 +3,40 @@ use std::{fs, time::Instant};
 use rand::seq::SliceRandom;
 use rckive_genpdf::{
     elements::{Break, PaddedElement, Paragraph, Text},
-    Document, Margins,
+    Document, Element, Margins,
 };
 
 mod data;
-use data::{Project, Question};
+use data::{Language, Project, Question};
 
 mod elements;
-use elements::{AlphabeticOrderedList, DottedLine};
+use elements::{AlphabeticOrderedList, DottedLine, SplitElement};
+
+fn gen_points_element(i: usize, question: &Question, language: &Language) -> impl Element {
+    let title = format!("{}. {}", i + 1, question.get_title());
+
+    let mut points_element = Paragraph::new(format!(
+        "{}",
+        language.format_points(*question.get_points())
+    ));
+    points_element.set_alignment(rckive_genpdf::Alignment::Right);
+
+    SplitElement::new(
+        Box::new(Paragraph::new(title)),
+        Box::new(points_element),
+        0.9,
+    )
+}
 
 fn gen_questions(doc: &mut Document, project: &Project) {
     let mut rng = rand::thread_rng();
     let language = project.settings.language.clone();
 
     for (i, question) in project.questions.iter().enumerate() {
-        // TODO: this needs a rework its fucking stupid!
-        let title = question.get_title();
-        let title = format!(
-            "{}. {} [{}]",
-            i + 1,
-            title,
-            language.format_points(*question.get_points())
-        );
+        doc.push(gen_points_element(i, question, &language));
 
         match question {
             Question::Selection(question) => {
-                let title = match question {
-                    q if q.correct.len() + q.incorrect.len() > 16 => {
-                        panic!("Question #{} has too many answers!", i + 1)
-                    }
-                    q if q.correct.len() > 1 => {
-                        format!("{} ({})", title, language.multiple_answers_hint())
-                    }
-                    _ => title,
-                };
-                doc.push(Paragraph::new(title));
-
                 let mut questions = question.correct.clone();
                 questions.append(&mut question.incorrect.clone());
                 questions.shuffle(&mut rng);
@@ -50,7 +48,6 @@ fn gen_questions(doc: &mut Document, project: &Project) {
                 doc.push(list);
             }
             Question::Input(question) => {
-                doc.push(Paragraph::new(title));
                 doc.push(Break::new(0.5));
                 for _ in 0..question.number_of_lines {
                     #[rustfmt::skip]
