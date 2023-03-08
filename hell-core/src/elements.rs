@@ -45,8 +45,13 @@ impl Element for AlphabeticOrderedList {
     }
 }
 
-pub struct DottedLine;
-impl Element for DottedLine {
+pub struct CharRepeat(char);
+impl CharRepeat {
+    pub fn new(ch: char) -> Self {
+        Self(ch)
+    }
+}
+impl Element for CharRepeat {
     fn render(
         &mut self,
         context: &rckive_genpdf::Context,
@@ -55,14 +60,17 @@ impl Element for DottedLine {
     ) -> Result<rckive_genpdf::RenderResult, rckive_genpdf::error::Error> {
         let mut result = RenderResult::default();
 
-        let width_per_ch = style.char_width(&context.font_cache, '.');
+        let width_per_ch = style.char_width(&context.font_cache, self.0);
         let n_chars = area.size().width / f64::from(width_per_ch);
+
+        let mut tmp = [0u8; 4];
+        let ch_str = self.0.encode_utf8(&mut tmp);
 
         area.print_str(
             &context.font_cache,
             Position::default(),
             style,
-            ".".repeat(f64::from(n_chars) as usize),
+            ch_str.repeat(f64::from(n_chars) as usize),
         )?;
 
         let line_height = style.line_height(&context.font_cache);

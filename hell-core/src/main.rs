@@ -14,7 +14,7 @@ mod data;
 use data::{Language, Project, Question};
 
 mod elements;
-use elements::{AlphabeticOrderedList, DottedLine, SplitElement};
+use elements::{AlphabeticOrderedList, CharRepeat, SplitElement};
 
 trait Punctuation {
     fn ends_with_punctuation(&self) -> bool;
@@ -101,7 +101,7 @@ fn gen_questions(doc: &mut Document, project: &Project) {
                 for _ in 0..question.number_of_lines {
                     #[rustfmt::skip]
                     doc.push(PaddedElement::new(
-                        DottedLine,
+                        CharRepeat::new('.'),
                         Margins::vh(1.5, 0.0)
                     ));
                 }
