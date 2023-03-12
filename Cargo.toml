@@ -1,5 +1,5 @@
 [package]
-name = "hell-core"
+name = "test-generator"
 version = "0.1.0"
 edition = "2021"
 
@@ -12,7 +12,11 @@ codegen-units = 1
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"] } 
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"] }
 toml = "0.7.2"
-rand = "0.8.5"
-rckive-genpdf = "0.4.0"
+clap = { version = "4.1.8", features = ["derive"] }
+
+[dependencies.druid]
+version = "0.8.3"
+features = ["im", "serde"]
