@@ -4,10 +4,14 @@ use clap::Parser;
 use data::{InputQuestion, Project, Question};
 use druid::{
     widget::{Button, Flex, Label, List, Scroll},
-    AppLauncher, Widget, WidgetExt, WindowDesc, Size,
+    AppLauncher, Size, Widget, WidgetExt, WindowDesc,
 };
+use pdf_gen::generate_pdf;
 
 pub mod data;
+pub mod elements;
+pub mod pdf_gen;
+pub mod settings;
 
 #[derive(Parser)]
 struct Args {
@@ -28,6 +32,13 @@ fn build_ui() -> impl Widget<Project> {
         );
     }));
 
+    root.add_child(
+        Button::new("Generate PDF").on_click(|_, data: &mut Project, _| {
+            let time = generate_pdf(data, "out.pdf");
+            println!("Generating took: {:?}", time);
+        }),
+    );
+
     #[rustfmt::skip]
     root.add_child(
         Scroll::new(
@@ -42,16 +53,6 @@ fn build_ui() -> impl Widget<Project> {
     root
 }
 
-fn run_gui(state: Project) {
-    let window = WindowDesc::new(build_ui())
-        .window_size(Size::new(1280.0, 720.0));
-
-    AppLauncher::with_window(window)
-        .log_to_console()
-        .launch(state)
-        .expect("failed to load gui");
-}
-
 fn main() {
     let args = Args::parse();
 
@@ -63,5 +64,10 @@ fn main() {
         None => Project::default(),
     };
 
-    run_gui(state);
+    let window = WindowDesc::new(build_ui()).window_size(Size::new(1280.0, 720.0));
+
+    AppLauncher::with_window(window)
+        .log_to_console()
+        .launch(state)
+        .expect("failed to load gui");
 }

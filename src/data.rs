@@ -1,6 +1,8 @@
 use druid::{im::Vector, Data, Lens};
 use serde::Deserialize;
 
+use crate::settings::Settings;
+
 const fn default_points() -> u8 {
     1
 }
@@ -45,17 +47,40 @@ impl Question {
             Question::Input(q) => q.question.clone(),
         }
     }
+    pub fn get_points(&self) -> u8 {
+        match self {
+            Question::Selection(q) => q.points,
+            Question::Input(q) => q.points,
+        }
+    }
+}
+
+#[allow(dead_code)]
+#[derive(Data, Debug, Deserialize, Clone)]
+pub struct Header {
+    pub title: String,
+}
+impl Default for Header {
+    fn default() -> Self {
+        Self {
+            title: "Test Header".into(),
+        }
+    }
 }
 
 #[allow(dead_code)]
 #[derive(Data, Lens, Deserialize, Clone)]
 pub struct Project {
+    pub settings: Settings,
+    pub header: Header,
     pub questions: Vector<Question>,
 }
 
 impl Default for Project {
     fn default() -> Self {
         Self {
+            settings: Default::default(),
+            header: Default::default(),
             questions: Default::default(),
         }
     }
