@@ -4,6 +4,7 @@ paper_size = "A4"
 language = "Bulgarian"
 fonts_path = "./assets/fonts"
 font = "TimesNewRoman"
+output = "out.pdf"
 
 [header]
 title = "Test of the test"

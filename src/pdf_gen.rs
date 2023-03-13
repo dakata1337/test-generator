@@ -12,7 +12,7 @@ use rckive_genpdf::{
 
 use crate::{
     data::{Project, Question},
-    elements::{AlphabeticOrderedList, CharRepeat, SplitElement},
+    pdf_elements::{AlphabeticOrderedList, CharRepeat, SplitElement},
     settings::Language,
 };
 

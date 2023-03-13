@@ -9,7 +9,7 @@ use druid::{
 use pdf_gen::generate_pdf;
 
 pub mod data;
-pub mod elements;
+pub mod pdf_elements;
 pub mod pdf_gen;
 pub mod settings;
 
@@ -34,7 +34,8 @@ fn build_ui() -> impl Widget<Project> {
 
     root.add_child(
         Button::new("Generate PDF").on_click(|_, data: &mut Project, _| {
-            let time = generate_pdf(data, "out.pdf");
+            println!("Generating: \x1b[1m{}\x1b[0m", data.settings.output);
+            let time = generate_pdf(data, &data.settings.output);
             println!("Generating took: {:?}", time);
         }),
     );

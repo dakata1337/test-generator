@@ -39,6 +39,7 @@ pub struct Settings {
     pub language: Language,
     pub fonts_path: String,
     pub font: String,
+    pub output: String,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -48,6 +49,7 @@ impl Default for Settings {
             language: Default::default(),
             fonts_path: Default::default(),
             font: Default::default(),
+            output: "out.pdf".into(),
         }
     }
 }
