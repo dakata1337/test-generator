@@ -9,28 +9,28 @@ output = "out.pdf"
 [header]
 title = "Test of the test"
 
-[[questions]]
+[[questions.inner]]
 question = "Is this statement true: \"PDF sucks\"?"
 correct = ["yes"]
 incorrect = ["no"]
 
-[[questions]]
+[[questions.inner]]
 question = "A longer question with selection answers!"
 correct = ["yes", "ye"]
 incorrect = ["no", "nah"]
 points = 2
 
-[[questions]]
+[[questions.inner]]
 question = "Why tho?"
 number_of_lines = 4
 
-[[questions]]
+[[questions.inner]]
 question = "Lots of answers"
 correct = ["yes", "ye", "yup", "yessir", "da"]
 incorrect = ["no", "nah", "nope", "nosir", "ne"]
 points = 2
 
-[[questions]]
+[[questions.inner]]
 correct = ["1"]
 incorrect = ["2", "3"]
 question = "word word word word word word word word word word word word word word word word word word word word word"

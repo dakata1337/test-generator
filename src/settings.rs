@@ -1,4 +1,3 @@
-use druid::Data;
 use rckive_genpdf::Size;
 use serde::Deserialize;
 
@@ -7,7 +6,7 @@ const fn default_bool_true() -> bool {
 }
 
 #[allow(dead_code)]
-#[derive(Data, Debug, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Deserialize, Clone, Copy)]
 pub enum PaperSize {
     A4,
 }
@@ -30,7 +29,7 @@ impl Into<Size> for PaperSize {
 }
 
 #[allow(dead_code)]
-#[derive(Data, Debug, Deserialize, Clone)]
+#[derive(Deserialize)]
 pub struct Settings {
     #[serde(default = "default_bool_true")]
     pub show_hints: bool,
@@ -55,7 +54,7 @@ impl Default for Settings {
 }
 
 #[allow(dead_code)]
-#[derive(Data, Debug, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Deserialize, Clone, Copy, PartialEq)]
 pub enum Language {
     English,
     Bulgarian,

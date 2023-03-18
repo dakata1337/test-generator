@@ -1,74 +1,128 @@
-use std::fs;
+use std::{
+    fs,
+    io::stdout,
+    time::{Duration, Instant},
+};
 
 use clap::Parser;
-use data::{InputQuestion, Project, Question};
-use druid::{
-    widget::{Button, Flex, Label, List, Scroll},
-    AppLauncher, Size, Widget, WidgetExt, WindowDesc,
+use crossterm::{
+    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use pdf_gen::generate_pdf;
+use data::Project;
+use tui::{
+    backend::{Backend, CrosstermBackend},
+    layout::{Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
+    text::Spans,
+    widgets::{Block, Borders, List, ListItem},
+    Frame, Terminal,
+};
 
 pub mod data;
 pub mod pdf_elements;
 pub mod pdf_gen;
 pub mod settings;
+pub mod ui_elements;
 
 #[derive(Parser)]
 struct Args {
     path: Option<String>,
 }
 
-fn build_ui() -> impl Widget<Project> {
-    let mut root = Flex::column();
+fn ui<B: Backend>(f: &mut Frame<B>, app: &mut Project) {
+    // Create two chunks with equal horizontal screen space
+    let chunks = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(50)].as_ref())
+        .split(f.size());
 
-    root.add_child(Button::new("Add New").on_click(|_, data: &mut Project, _| {
-        #[rustfmt::skip]
-        data.questions.push_back(
-            Question::Input(InputQuestion::new(
-                "Question here...".into(),
-                1,
-                1,
-            ))
-        );
-    }));
+    // Iterate through all elements in the `items` app and append some debug text to it.
+    let items: Vec<ListItem> = app
+        .questions
+        .iter()
+        .map(|i| {
+            let lines = vec![Spans::from(i.get_title())];
+            ListItem::new(lines).style(Style::default().fg(Color::Black).bg(Color::White))
+        })
+        .collect();
 
-    root.add_child(
-        Button::new("Generate PDF").on_click(|_, data: &mut Project, _| {
-            println!("Generating: \x1b[1m{}\x1b[0m", data.settings.output);
-            let time = generate_pdf(data, &data.settings.output);
-            println!("Generating took: {:?}", time);
-        }),
-    );
-
-    #[rustfmt::skip]
-    root.add_child(
-        Scroll::new(
-            List::new(|| {
-                Label::new(|item: &Question, _env: &_|
-                    format!("{}", item.get_title()))
-            })
-            .lens(Project::questions),
+    let items = List::new(items)
+        .block(Block::default().borders(Borders::ALL).title("List"))
+        .highlight_style(
+            Style::default()
+                .bg(Color::LightGreen)
+                .add_modifier(Modifier::BOLD),
         )
-    );
+        .highlight_symbol(">> ");
 
-    root
+    // We can now render the item list
+    f.render_stateful_widget(items, chunks[0], &mut app.questions.get_state());
 }
 
-fn main() {
+fn run_app<B: Backend>(
+    terminal: &mut Terminal<B>,
+    mut app: Project,
+    tick_rate: Duration,
+) -> anyhow::Result<()> {
+    let mut last_tick = Instant::now();
+    loop {
+        terminal.draw(|f| ui(f, &mut app))?;
+
+        let timeout = tick_rate
+            .checked_sub(last_tick.elapsed())
+            .unwrap_or_else(|| Duration::from_secs(0));
+        if crossterm::event::poll(timeout)? {
+            if let Event::Key(key) = event::read()? {
+                match key.code {
+                    KeyCode::Char('q') => return Ok(()),
+                    KeyCode::Left => app.questions.unselect(),
+                    KeyCode::Down => app.questions.next(),
+                    KeyCode::Up => app.questions.previous(),
+                    _ => {}
+                }
+            }
+        }
+        if last_tick.elapsed() >= tick_rate {
+            last_tick = Instant::now();
+        }
+    }
+}
+
+fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
     let state = match args.path {
         Some(path) => {
-            let content = fs::read_to_string(path).unwrap();
-            toml::from_str(&content).unwrap()
+            let content = fs::read_to_string(path)?;
+            toml::from_str(&content)?
         }
         None => Project::default(),
     };
 
-    let window = WindowDesc::new(build_ui()).window_size(Size::new(1280.0, 720.0));
+    enable_raw_mode()?;
+    let mut stdout = stdout();
+    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = Terminal::new(backend)?;
 
-    AppLauncher::with_window(window)
-        .log_to_console()
-        .launch(state)
-        .expect("failed to load gui");
+    // create app and run it
+    let tick_rate = Duration::from_millis(250);
+    let res = run_app(&mut terminal, state, tick_rate);
+
+    // restore terminal
+    disable_raw_mode()?;
+    execute!(
+        terminal.backend_mut(),
+        LeaveAlternateScreen,
+        DisableMouseCapture
+    )?;
+    terminal.show_cursor()?;
+
+    if res.is_err() {
+        eprintln!("{:?}", res);
+    }
+
+    Ok(())
 }

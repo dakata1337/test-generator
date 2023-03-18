@@ -1,22 +1,21 @@
-use druid::{im::Vector, Data, Lens};
 use serde::Deserialize;
 
-use crate::settings::Settings;
+use crate::{settings::Settings, ui_elements::StatefulList};
 
 const fn default_points() -> u8 {
     1
 }
 
-#[derive(Data, Deserialize, Clone)]
+#[derive(Deserialize)]
 pub struct SelectionQuestion {
     pub question: String,
-    pub correct: Vector<String>,
-    pub incorrect: Vector<String>,
+    pub correct: Vec<String>,
+    pub incorrect: Vec<String>,
     #[serde(default = "default_points")]
     pub points: u8,
 }
 
-#[derive(Data, Deserialize, Clone)]
+#[derive(Deserialize)]
 pub struct InputQuestion {
     pub question: String,
     pub number_of_lines: u16,
@@ -34,7 +33,7 @@ impl InputQuestion {
     }
 }
 
-#[derive(Data, Deserialize, Clone)]
+#[derive(Deserialize)]
 #[serde(untagged)]
 pub enum Question {
     Selection(SelectionQuestion),
@@ -56,7 +55,7 @@ impl Question {
 }
 
 #[allow(dead_code)]
-#[derive(Data, Debug, Deserialize, Clone)]
+#[derive(Deserialize)]
 pub struct Header {
     pub title: String,
 }
@@ -69,11 +68,11 @@ impl Default for Header {
 }
 
 #[allow(dead_code)]
-#[derive(Data, Lens, Deserialize, Clone)]
+#[derive(Deserialize)]
 pub struct Project {
     pub settings: Settings,
     pub header: Header,
-    pub questions: Vector<Question>,
+    pub questions: StatefulList<Question>,
 }
 
 impl Default for Project {
