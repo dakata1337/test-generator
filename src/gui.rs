@@ -1,9 +1,11 @@
+use std::{fs::File, io::Write};
+
 use crate::{
     data::{OpenedTab, Project},
     pdf_gen::generate_pdf,
     settings::PaperSize,
 };
-use egui::{ScrollArea, Ui};
+use egui::{ScrollArea, TextStyle, Ui};
 
 pub fn run_gui(project: Project) {
     let options = eframe::NativeOptions::default();
@@ -12,9 +14,22 @@ pub fn run_gui(project: Project) {
         .expect("eframe failed to start");
 }
 
+fn add_label(label: &str, ui: &mut Ui) {
+    ui.add_space(6.0);
+    ui.separator();
+    ui.add_space(2.0);
+
+    let og = ui.style().clone();
+    ui.style_mut().override_text_style = Some(TextStyle::Heading);
+    ui.label(label);
+    ui.set_style(og);
+
+    ui.add_space(4.0);
+}
+
 impl Project {
     fn draw_topbar(&mut self, ui: &mut Ui) {
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             ui.selectable_value(
                 &mut self.gui_state.opened_tab,
                 OpenedTab::Questions,
@@ -31,8 +46,22 @@ impl Project {
                 "Settings",
             );
 
+            ui.separator();
+
             if ui.button("Generate PDF").clicked() {
                 generate_pdf(self);
+            }
+            if ui.button("Save Project").clicked() {
+                let mut project_file = File::create("project.toml").unwrap();
+                let str = toml::to_string(self).unwrap();
+                _ = project_file.write(str.as_bytes());
+            }
+            if ui.button("Open Project").clicked() {
+                let content = std::fs::read_to_string("project.toml").unwrap();
+                *self = toml::from_str(&content).unwrap();
+                for q in self.questions.iter_mut() {
+                    q.update_buf_from_title();
+                }
             }
         });
         ui.end_row();
@@ -59,10 +88,7 @@ impl Project {
             .inner;
     }
     fn draw_configuration(&mut self, ui: &mut Ui) {
-        ui.label("Configuration");
-        ui.separator();
-
-        ui.label("General settings");
+        add_label("General settings", ui);
         _ = egui::TextEdit::singleline(&mut self.settings.output).show(ui);
 
         egui::ComboBox::from_label("Paper size")
@@ -72,13 +98,15 @@ impl Project {
                 ui.set_min_width(60.0);
                 ui.selectable_value(&mut self.settings.paper_size, PaperSize::A4, "A4");
             });
+
+        ui.label("Fonts path: ");
+        egui::TextEdit::singleline(&mut self.settings.fonts_path).show(ui);
+
+        ui.label("Font: ");
+        egui::TextEdit::singleline(&mut self.settings.font).show(ui);
         ui.end_row();
 
-        ui.add_space(6.0);
-        ui.separator();
-        ui.add_space(2.0);
-
-        ui.label("Header settings");
+        add_label("Header settings", ui);
 
         ui.label("Header title: ");
         egui::TextEdit::singleline(&mut self.header.title).show(ui);
