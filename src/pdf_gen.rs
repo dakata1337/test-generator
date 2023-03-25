@@ -1,7 +1,4 @@
-use std::{
-    path,
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 use rand::seq::SliceRandom;
 use rckive_genpdf::{
@@ -98,7 +95,7 @@ fn gen_questions(doc: &mut Document, project: &Project) {
     }
 }
 
-pub fn generate_pdf(project: &Project, path: impl AsRef<path::Path>) -> Duration {
+pub fn generate_pdf(project: &Project) -> Duration {
     let start = Instant::now();
 
     let font_family = rckive_genpdf::fonts::from_files(
@@ -119,7 +116,8 @@ pub fn generate_pdf(project: &Project, path: impl AsRef<path::Path>) -> Duration
     gen_header(&mut doc, &project);
     gen_questions(&mut doc, &project);
 
-    doc.render_to_file(path).expect("Failed to write PDF file");
+    doc.render_to_file(&project.settings.output)
+        .expect("Failed to write PDF file");
 
     start.elapsed()
 }

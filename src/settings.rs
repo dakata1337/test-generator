@@ -1,21 +1,27 @@
-use druid::Data;
+use std::fmt::Display;
+
 use rckive_genpdf::Size;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 const fn default_bool_true() -> bool {
     true
 }
 
 #[allow(dead_code)]
-#[derive(Data, Debug, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Default, Deserialize, Serialize, PartialEq, Eq, Clone, Copy)]
 pub enum PaperSize {
+    #[default]
     A4,
 }
-impl Default for PaperSize {
-    fn default() -> Self {
-        PaperSize::A4
+impl Display for PaperSize {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let name = match self {
+            PaperSize::A4 => "A4",
+        };
+        write!(f, "{}", name)
     }
 }
+
 impl Into<Size> for PaperSize {
     fn into(self) -> Size {
         let (w, h) = match self {
@@ -30,7 +36,7 @@ impl Into<Size> for PaperSize {
 }
 
 #[allow(dead_code)]
-#[derive(Data, Debug, Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Settings {
     #[serde(default = "default_bool_true")]
     pub show_hints: bool,
@@ -55,7 +61,7 @@ impl Default for Settings {
 }
 
 #[allow(dead_code)]
-#[derive(Data, Debug, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Deserialize, Serialize, PartialEq, Eq, Clone)]
 pub enum Language {
     English,
     Bulgarian,
