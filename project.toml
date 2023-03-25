@@ -10,7 +10,7 @@ output = "out.pdf"
 title = "Test of the test"
 
 [[questions]]
-question = "Is this statement true: \"PDF sucks\"?"
+question = "Това е въпрос!"
 correct = ["yes"]
 incorrect = ["no"]
 points = 1
@@ -33,7 +33,7 @@ incorrect = ["no", "nah", "nope", "nosir", "ne"]
 points = 2
 
 [[questions]]
-question = "XD"
+question = "word word word word word word word word word word word word word word word word word word word word word"
 correct = ["1"]
 incorrect = ["2", "3"]
 points = 1

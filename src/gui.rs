@@ -1,7 +1,7 @@
 use std::{fs::File, io::Write};
 
 use crate::{
-    data::{OpenedTab, Project},
+    data::{OpenedTab, Project, Question},
     pdf_gen::generate_pdf,
     settings::PaperSize,
 };
@@ -25,6 +25,26 @@ fn add_label(label: &str, ui: &mut Ui) {
     ui.set_style(og);
 
     ui.add_space(4.0);
+}
+
+fn add_answers(label: &str, answers: &mut Vec<String>, ui: &mut Ui) {
+    ui.label(label);
+    ui.vertical(|ui| {
+        for i in 0..answers.len() {
+            ui.horizontal(|ui| {
+                if let Some(q) = answers.get_mut(i) {
+                    _ = egui::TextEdit::singleline(q).show(ui);
+                }
+
+                if ui.button("Remove").clicked() {
+                    answers.remove(i);
+                }
+            });
+        }
+        if ui.button("Add").clicked() {
+            answers.push("New Answer".to_string());
+        }
+    });
 }
 
 impl Project {
@@ -80,6 +100,16 @@ impl Project {
 
                         if ui.button("Update").clicked() {
                             q.update_title_from_buf();
+                        }
+                        match q {
+                            Question::Selection(q) => {
+                                add_answers("Correct answers:", &mut q.correct, ui);
+                                add_answers("Incorrect answers:", &mut q.incorrect, ui);
+                            }
+                            Question::Input(q) => {
+                                ui.add(egui::Slider::new(&mut q.number_of_lines, 0..=64))
+                                    .on_hover_text("How many lines of text to be generated");
+                            }
                         }
                     });
                     ui.end_row();
