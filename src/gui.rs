@@ -225,11 +225,11 @@ impl eframe::App for Project {
         egui::CentralPanel::default().show(ctx, |ui| {
             self.draw_topbar(ui);
 
-            match self.gui_state.opened_tab {
+            ScrollArea::vertical().show(ui, |ui| match self.gui_state.opened_tab {
                 OpenedTab::Questions => self.draw_questions(ui),
                 OpenedTab::Configuration => self.draw_configuration(ui),
                 OpenedTab::Settings => self.draw_settings(ui),
-            }
+            });
 
             if let Ok(mut toasts) = self.gui_state.toasts.lock() {
                 toasts.show(ctx);

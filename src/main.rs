@@ -1,3 +1,6 @@
+// Hide the console on Windows
+#![windows_subsystem = "windows"]
+
 use std::fs;
 
 use clap::Parser;
