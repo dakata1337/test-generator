@@ -1,39 +1,27 @@
 [settings]
 show_hints = true
 paper_size = "A4"
-language = "Bulgarian"
+language = "English"
 fonts_path = "./assets/fonts"
 font = "TimesNewRoman"
-output = "out.pdf"
+output = "output.pdf"
 
 [header]
-title = "Test of the test"
+title = "Test Header"
 
 [[questions]]
-question = "Това е въпрос!"
-correct = ["yes"]
-incorrect = ["no"]
+question = "New selection question"
+correct = ["True"]
+incorrect = ["False"]
+points = 2
+
+[[questions]]
+question = "New selection question"
+correct = ["True"]
+incorrect = ["False"]
 points = 8
 
 [[questions]]
-question = "A longer question with selection answers!"
-correct = ["yes", "ye"]
-incorrect = ["no", "nah"]
-points = 2
-
-[[questions]]
-question = "Why tho?"
-number_of_lines = 4
-points = 1
-
-[[questions]]
-question = "Lots of answers"
-correct = ["yes", "ye", "yup", "yessir", "da"]
-incorrect = ["no", "nah", "nope", "nosir", "ne"]
-points = 2
-
-[[questions]]
-question = "word word word word word word word word word word word word word word word word word word word word word"
-correct = ["1"]
-incorrect = ["2", "3"]
+question = "New input question"
+number_of_lines = 10
 points = 1

@@ -128,11 +128,14 @@ impl Project {
                 }
                 Question::Input(q) => {
                     ui.horizontal(|ui| {
-                        ui.label("Points");
+                        ui.label("Points                   ");
                         ui.add(egui::Slider::new(&mut q.points, 1..=8));
                     });
-                    ui.add(egui::Slider::new(&mut q.number_of_lines, 0..=64))
-                        .on_hover_text("How many lines of text to be generated");
+                    ui.horizontal(|ui| {
+                        ui.label("Lines for answer");
+                        ui.add(egui::Slider::new(&mut q.number_of_lines, 0..=64))
+                            .on_hover_text("How many lines of text to be generated");
+                    });
                 }
             }
 
@@ -182,29 +185,50 @@ impl Project {
         add_label("General settings", ui);
         _ = egui::TextEdit::singleline(&mut self.settings.output).show(ui);
 
-        egui::ComboBox::from_label("Language")
-            .selected_text(self.settings.language.get_name())
-            .show_ui(ui, |ui| {
-                ui.style_mut().wrap = Some(false);
-                ui.set_min_width(60.0);
-                ui.selectable_value(&mut self.settings.language, English, English.get_name());
-                ui.selectable_value(&mut self.settings.language, Bulgarian, Bulgarian.get_name());
+        ui.horizontal(|ui| {
+            ui.label("Language        ");
+            ui.push_id("lang_comboxbox", |ui| {
+                egui::ComboBox::from_label("")
+                    .selected_text(self.settings.language.get_name())
+                    .show_ui(ui, |ui| {
+                        ui.style_mut().wrap = Some(false);
+                        ui.set_min_width(60.0);
+                        ui.selectable_value(
+                            &mut self.settings.language,
+                            English,
+                            English.get_name(),
+                        );
+                        ui.selectable_value(
+                            &mut self.settings.language,
+                            Bulgarian,
+                            Bulgarian.get_name(),
+                        );
+                    });
+            })
+        });
+
+        ui.horizontal(|ui| {
+            ui.label("Paper size       ");
+            ui.push_id("paper_size_comboxbox", |ui| {
+                egui::ComboBox::from_label("")
+                    .selected_text(format!("{}", self.settings.paper_size))
+                    .show_ui(ui, |ui| {
+                        ui.style_mut().wrap = Some(false);
+                        ui.set_min_width(60.0);
+                        ui.selectable_value(&mut self.settings.paper_size, PaperSize::A4, "A4");
+                    });
             });
+        });
 
-        egui::ComboBox::from_label("Paper size")
-            .selected_text(format!("{}", self.settings.paper_size))
-            .show_ui(ui, |ui| {
-                ui.style_mut().wrap = Some(false);
-                ui.set_min_width(60.0);
-                ui.selectable_value(&mut self.settings.paper_size, PaperSize::A4, "A4");
-            });
+        ui.horizontal(|ui| {
+            ui.label("Fonts path      ");
+            egui::TextEdit::singleline(&mut self.settings.fonts_path).show(ui);
+        });
 
-        ui.label("Fonts path: ");
-        egui::TextEdit::singleline(&mut self.settings.fonts_path).show(ui);
-
-        ui.label("Font: ");
-        egui::TextEdit::singleline(&mut self.settings.font).show(ui);
-        ui.end_row();
+        ui.horizontal(|ui| {
+            ui.label("Font                 ");
+            egui::TextEdit::singleline(&mut self.settings.font).show(ui);
+        });
 
         add_label("Header settings", ui);
 
