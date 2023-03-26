@@ -3,7 +3,10 @@ use std::{fs::File, io::Write, time::Duration};
 use crate::{
     data::{OpenedTab, Project, Question},
     pdf_gen::generate_pdf,
-    settings::PaperSize,
+    settings::{
+        Language::{Bulgarian, English},
+        PaperSize,
+    },
 };
 use egui::{ScrollArea, TextStyle, Ui};
 
@@ -107,10 +110,18 @@ impl Project {
 
             match question {
                 Question::Selection(q) => {
+                    ui.horizontal(|ui| {
+                        ui.label("Points");
+                        ui.add(egui::Slider::new(&mut q.points, 1..=8));
+                    });
                     ui.collapsing("Correct answers", |ui| add_answers(&mut q.correct, ui));
                     ui.collapsing("Incorrect answers", |ui| add_answers(&mut q.incorrect, ui));
                 }
                 Question::Input(q) => {
+                    ui.horizontal(|ui| {
+                        ui.label("Points");
+                        ui.add(egui::Slider::new(&mut q.points, 1..=8));
+                    });
                     ui.add(egui::Slider::new(&mut q.number_of_lines, 0..=64))
                         .on_hover_text("How many lines of text to be generated");
                 }
@@ -161,6 +172,15 @@ impl Project {
     fn draw_configuration(&mut self, ui: &mut Ui) {
         add_label("General settings", ui);
         _ = egui::TextEdit::singleline(&mut self.settings.output).show(ui);
+
+        egui::ComboBox::from_label("Language")
+            .selected_text(self.settings.language.get_name())
+            .show_ui(ui, |ui| {
+                ui.style_mut().wrap = Some(false);
+                ui.set_min_width(60.0);
+                ui.selectable_value(&mut self.settings.language, English, English.get_name());
+                ui.selectable_value(&mut self.settings.language, Bulgarian, Bulgarian.get_name());
+            });
 
         egui::ComboBox::from_label("Paper size")
             .selected_text(format!("{}", self.settings.paper_size))

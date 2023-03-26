@@ -108,4 +108,11 @@ impl Language {
             Language::Bulgarian => "Клас",
         }
     }
+    #[inline]
+    pub fn get_name(&self) -> &str {
+        match self {
+            Language::English => "English",
+            Language::Bulgarian => "Български",
+        }
+    }
 }

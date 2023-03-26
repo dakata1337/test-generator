@@ -13,7 +13,7 @@ title = "Test of the test"
 question = "Това е въпрос!"
 correct = ["yes"]
 incorrect = ["no"]
-points = 1
+points = 8
 
 [[questions]]
 question = "A longer question with selection answers!"
