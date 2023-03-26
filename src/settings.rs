@@ -109,6 +109,13 @@ impl Language {
         }
     }
     #[inline]
+    pub fn input_class_num(&self) -> &str {
+        match self {
+            Language::English => "No",
+            Language::Bulgarian => "№",
+        }
+    }
+    #[inline]
     pub fn get_name(&self) -> &str {
         match self {
             Language::English => "English",

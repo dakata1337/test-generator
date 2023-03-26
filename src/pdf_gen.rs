@@ -50,11 +50,19 @@ fn gen_header(doc: &mut Document, project: &Project) {
         Style::new().with_font_size(14),
     )));
 
-    let class = Box::new(Paragraph::new(StyledString::new(
-        format!("{}: _____", language.input_class()),
-        Style::new().with_font_size(14),
-    )));
-    doc.push(SplitElement::new(name, class, 0.75));
+    let class = Box::new(SplitElement::new(
+        Box::new(Paragraph::new(StyledString::new(
+            format!("{}: _____", language.input_class()),
+            Style::new().with_font_size(14),
+        ))),
+        Box::new(Paragraph::new(StyledString::new(
+            format!("{}: _____", language.input_class_num()),
+            Style::new().with_font_size(14),
+        ))),
+        0.5,
+    ));
+
+    doc.push(SplitElement::new(name, class, 0.7));
 
     doc.push(Break::new(0.5));
 }

@@ -1,7 +1,7 @@
 use std::{fs::File, io::Write, time::Duration};
 
 use crate::{
-    data::{OpenedTab, Project, Question},
+    data::{GuiState, OpenedTab, Project, Question},
     pdf_gen::generate_pdf,
     settings::{
         Language::{Bulgarian, English},
@@ -30,7 +30,7 @@ fn add_label(label: &str, ui: &mut Ui) {
     ui.add_space(4.0);
 }
 
-fn add_answers(answers: &mut Vec<String>, ui: &mut Ui) {
+fn add_answers(gui_state: &mut GuiState, answers: &mut Vec<String>, ui: &mut Ui) {
     ui.vertical(|ui| {
         for i in 0..answers.len() {
             ui.horizontal(|ui| {
@@ -44,6 +44,11 @@ fn add_answers(answers: &mut Vec<String>, ui: &mut Ui) {
             });
         }
         if ui.button("Add").clicked() {
+            if answers.len() >= 6 {
+                let mut toasts = gui_state.toasts.lock().unwrap();
+                toasts.error("Too many answers");
+                return;
+            }
             answers.push("New Answer".to_string());
         }
     });
@@ -114,8 +119,12 @@ impl Project {
                         ui.label("Points");
                         ui.add(egui::Slider::new(&mut q.points, 1..=8));
                     });
-                    ui.collapsing("Correct answers", |ui| add_answers(&mut q.correct, ui));
-                    ui.collapsing("Incorrect answers", |ui| add_answers(&mut q.incorrect, ui));
+                    ui.collapsing("Correct answers", |ui| {
+                        add_answers(&mut self.gui_state, &mut q.correct, ui)
+                    });
+                    ui.collapsing("Incorrect answers", |ui| {
+                        add_answers(&mut self.gui_state, &mut q.incorrect, ui)
+                    });
                 }
                 Question::Input(q) => {
                     ui.horizontal(|ui| {
