@@ -1,3 +1,6 @@
+use std::sync::{Arc, Mutex};
+
+use egui_notify::Toasts;
 use serde::{Deserialize, Serialize};
 
 use crate::settings::Settings;
@@ -16,6 +19,18 @@ pub struct SelectionQuestion {
     #[serde(default = "default_points")]
     pub points: u8,
 }
+impl Default for SelectionQuestion {
+    fn default() -> Self {
+        let q = "New selection question".to_string();
+        Self {
+            question_buf: q.clone(),
+            question: q,
+            correct: vec![],
+            incorrect: vec![],
+            points: 1,
+        }
+    }
+}
 
 #[derive(Deserialize, Serialize, Clone)]
 pub struct InputQuestion {
@@ -25,6 +40,17 @@ pub struct InputQuestion {
     pub number_of_lines: u16,
     #[serde(default = "default_points")]
     pub points: u8,
+}
+impl Default for InputQuestion {
+    fn default() -> Self {
+        let q = "New input question".to_string();
+        Self {
+            question_buf: q.clone(),
+            question: q,
+            number_of_lines: 4,
+            points: 1,
+        }
+    }
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -90,6 +116,9 @@ pub enum OpenedTab {
 #[derive(Deserialize, Serialize, Default, Clone)]
 pub struct GuiState {
     pub opened_tab: OpenedTab,
+    pub selected_question: usize,
+    #[serde(skip)]
+    pub toasts: Arc<Mutex<Toasts>>,
 }
 
 #[allow(dead_code)]
@@ -105,7 +134,14 @@ pub struct Project {
 impl Default for Project {
     fn default() -> Self {
         Self {
-            settings: Default::default(),
+            settings: Settings {
+                show_hints: true,
+                paper_size: crate::settings::PaperSize::A4,
+                language: crate::settings::Language::English,
+                fonts_path: "./assets/fonts".into(),
+                font: "TimesNewRoman".into(),
+                output: "output.pdf".into(),
+            },
             header: Default::default(),
             questions: Default::default(),
             gui_state: Default::default(),

@@ -1,4 +1,4 @@
-use std::{fs::File, io::Write};
+use std::{fs::File, io::Write, time::Duration};
 
 use crate::{
     data::{OpenedTab, Project, Question},
@@ -27,8 +27,7 @@ fn add_label(label: &str, ui: &mut Ui) {
     ui.add_space(4.0);
 }
 
-fn add_answers(label: &str, answers: &mut Vec<String>, ui: &mut Ui) {
-    ui.label(label);
+fn add_answers(answers: &mut Vec<String>, ui: &mut Ui) {
     ui.vertical(|ui| {
         for i in 0..answers.len() {
             ui.horizontal(|ui| {
@@ -69,7 +68,16 @@ impl Project {
             ui.separator();
 
             if ui.button("Generate PDF").clicked() {
-                generate_pdf(self);
+                let mut toasts = self.gui_state.toasts.lock().unwrap();
+
+                match generate_pdf(self) {
+                    Ok(dur) => toasts
+                        .success(format!("PDF was generated in {:.3}sec", dur.as_secs_f64()))
+                        .set_duration(Some(Duration::from_secs(2))),
+                    Err(err) => toasts
+                        .error(format!("{:?}", err))
+                        .set_duration(Some(Duration::from_secs(10))),
+                };
             }
             if ui.button("Save Project").clicked() {
                 let mut project_file = File::create("project.toml").unwrap();
@@ -88,34 +96,67 @@ impl Project {
     }
 
     fn draw_questions(&mut self, ui: &mut Ui) {
-        ui.label("Questions");
-        let scroll_area = ScrollArea::vertical().auto_shrink([false; 2]);
+        let sel_idx = self.gui_state.selected_question;
+        if let Some(question) = self.questions.get_mut(sel_idx) {
+            add_label("Question Editor", ui);
+            let question_title = question.get_title_buf();
+            let response = egui::TextEdit::singleline(question_title).show(ui).response;
+            if response.lost_focus() {
+                question.update_title_from_buf();
+            }
 
-        _ = scroll_area
-            .show(ui, |ui| {
-                for q in self.questions.iter_mut() {
-                    ui.separator();
-                    ui.collapsing(q.get_title(), |ui| {
-                        _ = egui::TextEdit::multiline(q.get_title_buf()).show(ui);
-
-                        if ui.button("Update").clicked() {
-                            q.update_title_from_buf();
-                        }
-                        match q {
-                            Question::Selection(q) => {
-                                add_answers("Correct answers:", &mut q.correct, ui);
-                                add_answers("Incorrect answers:", &mut q.incorrect, ui);
-                            }
-                            Question::Input(q) => {
-                                ui.add(egui::Slider::new(&mut q.number_of_lines, 0..=64))
-                                    .on_hover_text("How many lines of text to be generated");
-                            }
-                        }
-                    });
-                    ui.end_row();
+            match question {
+                Question::Selection(q) => {
+                    ui.collapsing("Correct answers", |ui| add_answers(&mut q.correct, ui));
+                    ui.collapsing("Incorrect answers", |ui| add_answers(&mut q.incorrect, ui));
                 }
-            })
-            .inner;
+                Question::Input(q) => {
+                    ui.add(egui::Slider::new(&mut q.number_of_lines, 0..=64))
+                        .on_hover_text("How many lines of text to be generated");
+                }
+            }
+
+            ui.horizontal(|ui| {
+                if ui.button("Remove question").clicked() {
+                    self.questions.remove(self.gui_state.selected_question);
+                    self.gui_state.selected_question = sel_idx.checked_sub(1).unwrap_or(0);
+                }
+                if ui.button("Clone question").clicked() {
+                    let question = &self.questions[self.gui_state.selected_question];
+                    self.questions.push(question.clone());
+                }
+            });
+        }
+
+        add_label("Questions", ui);
+
+        ui.horizontal(|ui| {
+            if ui.button("Add Selection").clicked() {
+                self.questions.push(Question::Selection(
+                    crate::data::SelectionQuestion::default(),
+                ));
+            }
+            if ui.button("Add Input").clicked() {
+                self.questions
+                    .push(Question::Input(crate::data::InputQuestion::default()));
+            }
+        });
+        ui.add_space(4.0);
+
+        if self.questions.is_empty() {
+            ui.label("No questions added yet");
+        } else {
+            ScrollArea::vertical().show(ui, |ui| {
+                for (idx, q) in self.questions.iter().enumerate() {
+                    let selected = idx == sel_idx;
+
+                    let sel_label = ui.selectable_label(selected, q.get_title());
+                    if sel_label.clicked() {
+                        self.gui_state.selected_question = idx;
+                    }
+                }
+            });
+        }
     }
     fn draw_configuration(&mut self, ui: &mut Ui) {
         add_label("General settings", ui);
@@ -159,6 +200,10 @@ impl eframe::App for Project {
                 OpenedTab::Questions => self.draw_questions(ui),
                 OpenedTab::Configuration => self.draw_configuration(ui),
                 OpenedTab::Settings => self.draw_settings(ui),
+            }
+
+            if let Ok(mut toasts) = self.gui_state.toasts.lock() {
+                toasts.show(ctx);
             }
         });
     }

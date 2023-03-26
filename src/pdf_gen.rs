@@ -95,15 +95,14 @@ fn gen_questions(doc: &mut Document, project: &Project) {
     }
 }
 
-pub fn generate_pdf(project: &Project) -> Duration {
+pub fn generate_pdf(project: &Project) -> anyhow::Result<Duration> {
     let start = Instant::now();
 
     let font_family = rckive_genpdf::fonts::from_files(
         &project.settings.fonts_path,
         &project.settings.font,
         None,
-    )
-    .expect("Failed to load font family");
+    )?;
 
     let mut doc = rckive_genpdf::Document::new(font_family);
     doc.set_paper_size(project.settings.paper_size);
@@ -116,8 +115,7 @@ pub fn generate_pdf(project: &Project) -> Duration {
     gen_header(&mut doc, &project);
     gen_questions(&mut doc, &project);
 
-    doc.render_to_file(&project.settings.output)
-        .expect("Failed to write PDF file");
+    doc.render_to_file(&project.settings.output)?;
 
-    start.elapsed()
+    Ok(start.elapsed())
 }
