@@ -232,9 +232,10 @@ impl Project {
 
         add_label("Header settings", ui);
 
-        ui.label("Header title: ");
-        egui::TextEdit::singleline(&mut self.header.title).show(ui);
-        _ = ui.end_row();
+        ui.horizontal(|ui| {
+            ui.label("Header title:   ");
+            egui::TextEdit::singleline(&mut self.header.title).show(ui);
+        });
     }
     fn draw_settings(&mut self, ui: &mut Ui) {
         ui.horizontal(|ui| {
