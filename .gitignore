@@ -1,3 +1,4 @@
 /target
 *.zip
-*.pdf
+out.pdf
+output.pdf

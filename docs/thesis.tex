@@ -1,0 +1,51 @@
+\documentclass[12pt]{article}
+
+\usepackage{mathptmx}
+\renewcommand{\baselinestretch}{1.0} 
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,bulgarian]{babel}
+
+\usepackage{blindtext} % text placeholder
+\usepackage[%
+    left=0.75in,%
+    right=0.75in,%
+    top=0.75in,%
+    bottom=0.75in,%
+]{geometry}%
+\usepackage{graphicx}
+
+% Clickable bibliography
+\usepackage{hyperref}
+\usepackage[
+    backend=biber,
+    natbib=true,
+    sorting=none,
+    style=numeric-comp,
+]{biblatex}
+\addbibresource{sources.bib}
+
+\title{Софтуер за генериране на изпитни билети}
+\author{Даниел Василев}
+
+\begin{document}
+
+\addtocounter{page}{-1}
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+
+\tableofcontents
+
+\include{intro}
+
+\include{main}
+
+\include{conclusion}
+
+\newpage
+\printbibliography %Prints bibliography
+
+\end{document}
