@@ -122,6 +122,15 @@ pub fn generate_pdf(project: &Project) -> anyhow::Result<Duration> {
 
     gen_header(&mut doc, &project);
     gen_questions(&mut doc, &project);
+    // TODO: add footer
+    //
+    // TODO: Docs: 
+    // Разработка на софтуер - генерално
+    // Agile, SCRUM
+    // Жинен цикъл
+    //
+    // Изисквания
+    // Подобни проекти
 
     doc.render_to_file(&project.settings.output)?;
 

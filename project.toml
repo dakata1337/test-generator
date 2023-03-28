@@ -1,7 +1,7 @@
 [settings]
 show_hints = true
 paper_size = "A4"
-language = "English"
+language = "Bulgarian"
 fonts_path = "./assets/fonts"
 font = "TimesNewRoman"
 output = "output.pdf"
@@ -10,18 +10,7 @@ output = "output.pdf"
 title = "Test Header"
 
 [[questions]]
-question = "New selection question"
-correct = ["True"]
-incorrect = ["False"]
-points = 2
-
-[[questions]]
-question = "New selection question"
-correct = ["True"]
-incorrect = ["False"]
-points = 8
-
-[[questions]]
-question = "New input question"
-number_of_lines = 10
-points = 1
+question = "Select the correct statement"
+correct = []
+incorrect = ["New Answer", "New Answer", "New Answer", "New Answer", "New Answer", "New Answer"]
+points = 4

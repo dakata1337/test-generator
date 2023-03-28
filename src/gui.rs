@@ -1,4 +1,8 @@
-use std::{fs::File, io::Write, time::Duration};
+use std::{
+    fs::File,
+    io::Write,
+    time::Duration,
+};
 
 use crate::{
     data::{GuiState, OpenedTab, Project, Question},
@@ -237,11 +241,16 @@ impl Project {
             egui::TextEdit::singleline(&mut self.header.title).show(ui);
         });
     }
-    fn draw_settings(&mut self, ui: &mut Ui) {
-        ui.horizontal(|ui| {
-            ui.label("egui theme:");
-            egui::widgets::global_dark_light_mode_buttons(ui);
-        });
+    fn draw_settings(&mut self, ui: &mut Ui, ctx: &egui::Context) {
+        add_label("UI Style", ui);
+
+        ctx.style_ui(ui);
+
+        if cfg!(debug_assertions) {
+            add_label("Debug Info", ui);
+            ui.collapsing("Settings", |ui| ctx.settings_ui(ui));
+            ui.collapsing("Memory", |ui| ctx.memory_ui(ui));
+        }
     }
 }
 
@@ -253,7 +262,7 @@ impl eframe::App for Project {
             ScrollArea::vertical().show(ui, |ui| match self.gui_state.opened_tab {
                 OpenedTab::Questions => self.draw_questions(ui),
                 OpenedTab::Configuration => self.draw_configuration(ui),
-                OpenedTab::Settings => self.draw_settings(ui),
+                OpenedTab::Settings => self.draw_settings(ui, ctx),
             });
 
             if let Ok(mut toasts) = self.gui_state.toasts.lock() {
