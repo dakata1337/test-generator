@@ -11,10 +11,69 @@ Hoare, който по това време работи за Mozilla. През 2
 % бърз колкото езици от по-ниско ниво като C/C++.
 
 Езици като C\#, Python и JavaScript използват система за освобождаване на паметта
-наречена Garbage Collector. За да може да се освободят неизползваните
+наречена Garbage Collector (GC). За да може да се освободят неизползваните
 променливи, изпълнението на програмата трябва да бъде спряно на пауза и да се
 провери дали има заделени региони от паметта, към които вече не се използват
-или са маркиране за освобождаване от програмиста \cite{Garbage_Collection_Wikipedia}.
+или са маркиране за освобождаване от програмиста \cite{Garbage_Collection_Wikipedia}
+
+Rust използва система наречена borrow checker, която проверява, по време на
+компилация, дали програмата следва следните принципи:
+
+\begin{itemize}
+
+\item Ресурсите (отделената памет за стойноста) могат да имат само един
+собственик и това е самата промелива. Когато променлива вече не може да бъде
+достъпена тя бива освободена.
+
+\item Когато една променлива бъде подадена към някоя функция, собственик на
+ресурсите става променливата във функцията. Ако се пробваме подадем отново
+променливата, компилатора ще ни каже, че променливата е преместена (Use of
+moved value).
+% TODO: put image of `Use of moved value` error
+
+\end{itemize}
+
+% TODO: explain Rust enums
+
+\subsubsection{Pointer-и}
+% TODO: what the fuck is a pointer?
+
+\subsubsection{Option типа}
+В повечето езици съществува идеята за NULL пойнтери. Когато един pointer е Null
+това означа, че той сочи към нищо. Идеята за Null на теория е много добра, но
+на практика създава повече проблеми. Ако се пробваме да достъпим pointer който
+е Null, програмата ще крашне или в някои езици като C\# ще хвърли
+NullReferenceException.
+
+Разработчиците на Rust са намерили много добър заместител на Null и това е
+Option enum-а, който има два варинта. Това са Some(T) когато имаме някаква
+стойнос и None когато нямаме нищо.
+
+\subsubsection{Result типа}
+Когато програмираме на C\# много често ни се случва да хвърляме Exception-и и
+съответно да ги хващаме с try/catch блока. Еxception-ите се ползват когато в
+една функция възникне грешка.
+
+Във фигура \ref{fig:csharp-exceptions-1-code} е даден код който на пръв поглед
+изглежда добре, но има скрити бъгове. Какво ще стане ако потребилтеля въведе
+дума вместо число? Ще получим Exception който ни казва: "Input string was not
+in a correct format" (Фигура \ref{fig:csharp-exceptions-1-output}).
+
+Проблема е че ние като програмисти не знаем, че int.Parse може да хвърли Exception без да се консултираме с документацията \cite{CSharp_Int_Parse}.
+
+\begin{figure}
+  \includegraphics[scale=0.75]{csharp-exceptions-1-code}
+  \centering
+  \caption{Пример за скрит Exception}
+  \label{fig:csharp-exceptions-1-code}
+\end{figure}
+
+\begin{figure}
+  \includegraphics[width=\textwidth,keepaspectratio=true]{csharp-exceptions-1-output}
+  \centering
+  \caption{Изход на кода от Фигура \ref{fig:csharp-exceptions-1-code}}
+  \label{fig:csharp-exceptions-1-output}
+\end{figure}
 
 % TODO: write how Rust provides memory & thread safety, how the borrow checker
 % works, lifetimes maybe?
