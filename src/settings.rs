@@ -122,4 +122,18 @@ impl Language {
             Language::Bulgarian => "Български",
         }
     }
+    #[inline]
+    pub fn get_examiner(&self) -> &str {
+        match self {
+            Language::English => "Examined by",
+            Language::Bulgarian => "Проверено от",
+        }
+    }
+    #[inline]
+    pub fn get_points_sum(&self) -> &str {
+        match self {
+            Language::English => "Points",
+            Language::Bulgarian => "Точки",
+        }
+    }
 }

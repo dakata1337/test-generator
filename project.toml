@@ -10,7 +10,12 @@ output = "output.pdf"
 title = "Test Header"
 
 [[questions]]
-question = "Select the correct statement"
+question = "New selection question"
 correct = []
-incorrect = ["New Answer", "New Answer", "New Answer", "New Answer", "New Answer", "New Answer"]
-points = 4
+incorrect = []
+points = 8
+
+[[questions]]
+question = "New input question"
+number_of_lines = 9
+points = 8

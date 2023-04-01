@@ -79,18 +79,21 @@ impl Element for CharRepeat {
     }
 }
 
-pub type DynElem = Box<dyn Element>;
 pub struct SplitElement {
-    left: DynElem,
-    right: DynElem,
+    left: Box<dyn Element>,
+    right: Box<dyn Element>,
     split_size: f64,
 }
 
 impl SplitElement {
-    pub fn new(left: DynElem, right: DynElem, split_size: f64) -> Self {
+    pub fn new(
+        left: impl Element + 'static,
+        right: impl Element + 'static,
+        split_size: f64,
+    ) -> Self {
         Self {
-            left: left.into(),
-            right: right.into(),
+            left: Box::new(left),
+            right: Box::new(right),
             split_size,
         }
     }
@@ -103,15 +106,22 @@ impl Element for SplitElement {
         area: render::Area<'_>,
         style: rckive_genpdf::style::Style,
     ) -> Result<RenderResult, rckive_genpdf::error::Error> {
-        let left_width = area.size().width * self.split_size;
+        if self.split_size == 0.0 {
+            let left = self.left.render(context, area.clone(), style)?;
 
-        let mut left = area.clone();
-        left.set_width(left_width);
-        let mut right = area.clone();
-        right.add_offset(Position::new(left_width, 0.0));
+            let mut right_area = area.clone();
+            right_area.add_offset(Position::new(left.size.width, 0.0));
+            self.right.render(context, right_area, style)
+        } else {
+            let left_width = area.size().width * self.split_size;
 
-        let left = self.left.render(context, left, style);
-        _ = self.right.render(context, right, style);
-        left
+            let mut left = area.clone();
+            left.set_width(left_width);
+            let mut right = area.clone();
+            right.add_offset(Position::new(left_width, 0.0));
+
+            self.left.render(context, left, style)?;
+            self.right.render(context, right, style)
+        }
     }
 }

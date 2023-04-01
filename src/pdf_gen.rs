@@ -20,11 +20,7 @@ fn gen_points_element(i: usize, question: &Question, language: &Language) -> imp
         Paragraph::new(format!("{}", language.format_points(question.get_points())));
     points_element.set_alignment(rckive_genpdf::Alignment::Right);
 
-    SplitElement::new(
-        Box::new(Paragraph::new(title)),
-        Box::new(points_element),
-        0.9,
-    )
+    SplitElement::new(Paragraph::new(title), points_element, 0.9)
 }
 
 fn gen_header(doc: &mut Document, project: &Project) {
@@ -42,25 +38,25 @@ fn gen_header(doc: &mut Document, project: &Project) {
 
     // TODO: export to an Element that requires a string and repeats a char until the end of the
     // area
-    let name = Box::new(Paragraph::new(StyledString::new(
+    let name = Paragraph::new(StyledString::new(
         format!(
             "{}: ________________________________________",
             language.input_name()
         ),
         Style::new().with_font_size(14),
-    )));
+    ));
 
-    let class = Box::new(SplitElement::new(
-        Box::new(Paragraph::new(StyledString::new(
+    let class = SplitElement::new(
+        Paragraph::new(StyledString::new(
             format!("{}: _____", language.input_class()),
             Style::new().with_font_size(14),
-        ))),
-        Box::new(Paragraph::new(StyledString::new(
+        )),
+        Paragraph::new(StyledString::new(
             format!("{}: _____", language.input_class_num()),
             Style::new().with_font_size(14),
-        ))),
+        )),
         0.5,
-    ));
+    );
 
     doc.push(SplitElement::new(name, class, 0.7));
 
@@ -103,6 +99,28 @@ fn gen_questions(doc: &mut Document, project: &Project) {
     }
 }
 
+fn gen_footer(doc: &mut Document, project: &Project) {
+    let max_points: u32 = project
+        .questions
+        .iter()
+        .fold(0, |acc, x| acc + x.get_points() as u32);
+    let poins_needed_space = max_points.ilog10() + 2;
+
+    let examiner = SplitElement::new(
+        Paragraph::new(format!("{}: ", project.settings.language.get_examiner())),
+        Paragraph::new("______________________________"),
+        0.0,
+    );
+    let points = Paragraph::new(format!(
+        "{}: {}/{}",
+        project.settings.language.get_points_sum(),
+        "_".repeat(poins_needed_space as usize),
+        max_points
+    ));
+
+    doc.push(SplitElement::new(examiner, points, 0.7));
+}
+
 pub fn generate_pdf(project: &Project) -> anyhow::Result<Duration> {
     let start = Instant::now();
 
@@ -122,9 +140,8 @@ pub fn generate_pdf(project: &Project) -> anyhow::Result<Duration> {
 
     gen_header(&mut doc, &project);
     gen_questions(&mut doc, &project);
-    // TODO: add footer
-    //
-    // TODO: Docs: 
+    gen_footer(&mut doc, &project);
+    // TODO: Docs:
     // Разработка на софтуер - генерално
     // Agile, SCRUM
     // Жинен цикъл
