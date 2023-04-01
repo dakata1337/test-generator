@@ -1,5 +1,7 @@
-use druid::{im::Vector, Data, Lens};
-use serde::Deserialize;
+use std::sync::{Arc, Mutex};
+
+use egui_notify::Toasts;
+use serde::{Deserialize, Serialize};
 
 use crate::settings::Settings;
 
@@ -7,34 +9,51 @@ const fn default_points() -> u8 {
     1
 }
 
-#[derive(Data, Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct SelectionQuestion {
+    #[serde(skip)]
+    pub question_buf: String,
     pub question: String,
-    pub correct: Vector<String>,
-    pub incorrect: Vector<String>,
+    pub correct: Vec<String>,
+    pub incorrect: Vec<String>,
     #[serde(default = "default_points")]
     pub points: u8,
 }
+impl Default for SelectionQuestion {
+    fn default() -> Self {
+        let q = "New selection question".to_string();
+        Self {
+            question_buf: q.clone(),
+            question: q,
+            correct: vec![],
+            incorrect: vec![],
+            points: 1,
+        }
+    }
+}
 
-#[derive(Data, Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct InputQuestion {
+    #[serde(skip)]
+    pub question_buf: String,
     pub question: String,
     pub number_of_lines: u16,
     #[serde(default = "default_points")]
     pub points: u8,
 }
-
-impl InputQuestion {
-    pub fn new(question: String, number_of_lines: u16, points: u8) -> Self {
+impl Default for InputQuestion {
+    fn default() -> Self {
+        let q = "New input question".to_string();
         Self {
-            question,
-            number_of_lines,
-            points,
+            question_buf: q.clone(),
+            question: q,
+            number_of_lines: 4,
+            points: 1,
         }
     }
 }
 
-#[derive(Data, Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 #[serde(untagged)]
 pub enum Question {
     Selection(SelectionQuestion),
@@ -47,6 +66,24 @@ impl Question {
             Question::Input(q) => q.question.clone(),
         }
     }
+    pub fn get_title_buf(&mut self) -> &mut String {
+        match self {
+            Question::Selection(q) => &mut q.question_buf,
+            Question::Input(q) => &mut q.question_buf,
+        }
+    }
+    pub fn update_title_from_buf(&mut self) {
+        match self {
+            Question::Selection(q) => q.question = q.question_buf.clone(),
+            Question::Input(q) => q.question = q.question_buf.clone(),
+        }
+    }
+    pub fn update_buf_from_title(&mut self) {
+        match self {
+            Question::Selection(q) => q.question_buf = q.question.clone(),
+            Question::Input(q) => q.question_buf = q.question.clone(),
+        }
+    }
     pub fn get_points(&self) -> u8 {
         match self {
             Question::Selection(q) => q.points,
@@ -56,7 +93,7 @@ impl Question {
 }
 
 #[allow(dead_code)]
-#[derive(Data, Debug, Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Header {
     pub title: String,
 }
@@ -68,20 +105,46 @@ impl Default for Header {
     }
 }
 
+#[derive(Deserialize, Serialize, Default, PartialEq, Eq, Clone)]
+pub enum OpenedTab {
+    #[default]
+    Questions,
+    Configuration,
+    Settings,
+}
+
+#[derive(Deserialize, Serialize, Default, Clone)]
+pub struct GuiState {
+    pub opened_tab: OpenedTab,
+    pub selected_question: usize,
+    #[serde(skip)]
+    pub toasts: Arc<Mutex<Toasts>>,
+}
+
 #[allow(dead_code)]
-#[derive(Data, Lens, Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct Project {
     pub settings: Settings,
     pub header: Header,
-    pub questions: Vector<Question>,
+    pub questions: Vec<Question>,
+    #[serde(skip)]
+    pub gui_state: GuiState,
 }
 
 impl Default for Project {
     fn default() -> Self {
         Self {
-            settings: Default::default(),
+            settings: Settings {
+                show_hints: true,
+                paper_size: crate::settings::PaperSize::A4,
+                language: crate::settings::Language::English,
+                fonts_path: "./assets/fonts".into(),
+                font: "TimesNewRoman".into(),
+                output: "output.pdf".into(),
+            },
             header: Default::default(),
             questions: Default::default(),
+            gui_state: Default::default(),
         }
     }
 }

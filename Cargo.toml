@@ -18,7 +18,6 @@ toml = "0.7.2"
 clap = { version = "4.1.8", features = ["derive"] }
 rckive-genpdf = "0.4.0"
 rand = "0.8.5"
-
-[dependencies.druid]
-version = "0.8.3"
-features = ["im", "serde"]
+egui = "0.21.0"
+eframe = "0.21.3"
+egui-notify = "0.6.0"

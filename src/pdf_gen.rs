@@ -1,7 +1,4 @@
-use std::{
-    path,
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 use rand::seq::SliceRandom;
 use rckive_genpdf::{
@@ -23,11 +20,7 @@ fn gen_points_element(i: usize, question: &Question, language: &Language) -> imp
         Paragraph::new(format!("{}", language.format_points(question.get_points())));
     points_element.set_alignment(rckive_genpdf::Alignment::Right);
 
-    SplitElement::new(
-        Box::new(Paragraph::new(title)),
-        Box::new(points_element),
-        0.9,
-    )
+    SplitElement::new(Paragraph::new(title), points_element, 0.9)
 }
 
 fn gen_header(doc: &mut Document, project: &Project) {
@@ -45,19 +38,27 @@ fn gen_header(doc: &mut Document, project: &Project) {
 
     // TODO: export to an Element that requires a string and repeats a char until the end of the
     // area
-    let name = Box::new(Paragraph::new(StyledString::new(
+    let name = Paragraph::new(StyledString::new(
         format!(
             "{}: ________________________________________",
             language.input_name()
         ),
         Style::new().with_font_size(14),
-    )));
+    ));
 
-    let class = Box::new(Paragraph::new(StyledString::new(
-        format!("{}: _____", language.input_class()),
-        Style::new().with_font_size(14),
-    )));
-    doc.push(SplitElement::new(name, class, 0.75));
+    let class = SplitElement::new(
+        Paragraph::new(StyledString::new(
+            format!("{}: _____", language.input_class()),
+            Style::new().with_font_size(14),
+        )),
+        Paragraph::new(StyledString::new(
+            format!("{}: _____", language.input_class_num()),
+            Style::new().with_font_size(14),
+        )),
+        0.5,
+    );
+
+    doc.push(SplitElement::new(name, class, 0.7));
 
     doc.push(Break::new(0.5));
 }
@@ -98,15 +99,36 @@ fn gen_questions(doc: &mut Document, project: &Project) {
     }
 }
 
-pub fn generate_pdf(project: &Project, path: impl AsRef<path::Path>) -> Duration {
+fn gen_footer(doc: &mut Document, project: &Project) {
+    let max_points: u32 = project
+        .questions
+        .iter()
+        .fold(0, |acc, x| acc + x.get_points() as u32);
+    let poins_needed_space = max_points.ilog10() + 2;
+
+    let examiner = SplitElement::new(
+        Paragraph::new(format!("{}: ", project.settings.language.get_examiner())),
+        Paragraph::new("______________________________"),
+        0.0,
+    );
+    let points = Paragraph::new(format!(
+        "{}: {}/{}",
+        project.settings.language.get_points_sum(),
+        "_".repeat(poins_needed_space as usize),
+        max_points
+    ));
+
+    doc.push(SplitElement::new(examiner, points, 0.7));
+}
+
+pub fn generate_pdf(project: &Project) -> anyhow::Result<Duration> {
     let start = Instant::now();
 
     let font_family = rckive_genpdf::fonts::from_files(
         &project.settings.fonts_path,
         &project.settings.font,
         None,
-    )
-    .expect("Failed to load font family");
+    )?;
 
     let mut doc = rckive_genpdf::Document::new(font_family);
     doc.set_paper_size(project.settings.paper_size);
@@ -118,8 +140,16 @@ pub fn generate_pdf(project: &Project, path: impl AsRef<path::Path>) -> Duration
 
     gen_header(&mut doc, &project);
     gen_questions(&mut doc, &project);
+    gen_footer(&mut doc, &project);
+    // TODO: Docs:
+    // Разработка на софтуер - генерално
+    // Agile, SCRUM
+    // Жинен цикъл
+    //
+    // Изисквания
+    // Подобни проекти
 
-    doc.render_to_file(path).expect("Failed to write PDF file");
+    doc.render_to_file(&project.settings.output)?;
 
-    start.elapsed()
+    Ok(start.elapsed())
 }

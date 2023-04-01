@@ -1,0 +1,21 @@
+[settings]
+show_hints = true
+paper_size = "A4"
+language = "Bulgarian"
+fonts_path = "./assets/fonts"
+font = "TimesNewRoman"
+output = "output.pdf"
+
+[header]
+title = "Test Header"
+
+[[questions]]
+question = "New selection question"
+correct = []
+incorrect = []
+points = 8
+
+[[questions]]
+question = "New input question"
+number_of_lines = 9
+points = 8
