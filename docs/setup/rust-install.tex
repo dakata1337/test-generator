@@ -19,8 +19,12 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 \end{lstlisting}
 
 Или през package manager-а на операционната система.
-В MacOS това е homebrew.
-% TODO: give homebrew install guide
+В MacOS можем да използваме Homebrew. За да инсталираме Homebrew трябва да изпълним тeзи команди:
+\begin{lstlisting}
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+brew install rust
+\end{lstlisting}
 
 A в Linux зависи от дистрибуцията:
 \begin{itemize}
@@ -36,6 +40,6 @@ A в Linux зависи от дистрибуцията:
 \begin{figure}[!htb]
   \includegraphics[scale=0.32]{rust-up-windows-install}
   \centering
-  \caption{Сайт за изтегляне на инсталационния файл на Rust}
+  \caption{Сайт за изтегляне на инсталационния файл на Rust за Windows}
   \label{fig:rust-up-windows-install}
 \end{figure}
