@@ -20,7 +20,9 @@
 \newpage
 
 \section{Подготовка}
-Преди да започнем с разработката на софтуера трябва да настроим нашета среда за разработка. Тя включва Rust компилатора, текстов редактор (IDE), 
+Преди да започнем с разработката на софтуера трябва да настроим нашета среда за
+разработка. Тя включва Rust компилатора, текстов редактор (IDE) и Git за
+контрол на версиитe.
 
 \input{setup/rust-install}
 \newpage
@@ -30,3 +32,50 @@
 \newpage
 
 \section{Разработка}
+
+\subsection{Създаване на проекта}
+За да създадем нов Rust проект, трябва до отворим конзолата и да изпълним следната команда:
+\begin{lstlisting}
+cargo new test-generator
+\end{lstlisting}
+
+Тя ще генерира папка със името test-generator в която се намира проекта.
+В src се намират файловете в които пишем кода, а в Cargo.toml файла се намира
+конфигурацията на проекта.
+
+За да отворим проекта в текстов редактор може да напишем комантада `code .` за
+да го отворим във VSCode или `nvim .` за да го отворим във Neovim.
+ 
+\begin{figure}[!htb]
+  \includegraphics[scale=0.60]{new-rust-project}
+  \centering
+  \caption{Файловата структура на Rust проекта}
+  \label{fig:new-rust-project}
+\end{figure}
+
+\subsection{Добавяне на библиотеки}
+
+
+% [x] cargo new test-generator
+% [x] open in text editor
+% [ ] import libraries
+% [ ] create data structures
+%     [ ] Project
+%         [ ] Question
+%             [ ] SelectionQuestion
+%             [ ] InputQuestion
+% [ ] create command line arguments (clap)
+%     [ ] describe what clap is and how it works
+% [ ] create pdf generator
+%     [ ] create elements
+%         [ ] AlphabeticOrderedList
+%         [ ] CharRepeat
+%         [ ] SplitElement
+%     [ ] setting up the pdf library
+%     [ ] generating header
+%     [ ] generating questions
+%     [ ] generating footer
+% [ ] create gui
+%     [ ] create questions tab
+%     [ ] create configuration tab
+%     [ ] create settings tab
