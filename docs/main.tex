@@ -55,17 +55,49 @@ cargo new test-generator
 
 \subsection{Добавяне на библиотеки}
 
+\subsubsection{Конзолни аргументи}
+Аргументите на конзолата са параметри, предавани на програма преди изпълнение
+на поргамата в командния ред. В Rust аргументите могат да бъдат достъпени чрез
+функцията std::env::args(), която връща итератор над аргументите като списък от
+низове.
+
+За да вземем подходящата информация за приложението може да напишм наш собствен
+анализатор или да изплозваме една от многото различни библиотеки за работа с
+конзолни аргументи. Една от най-използваните библиотеки е clap (Console Line
+Argument Parser).
+
+Clap ни предоставя с clap::Parser макрото, което при компилирането на програмата
+анализира структурата от данни и автоматично търси командните аргументи при екзекуция.
+Също тъка проверява кои аргументи са маркирани като задължителни или такива със
+стойност по подразбиране.
+% TODO: add image
+
+При въвеждане на грешни аргументи или при липсата на задължителните такива, Clap
+показва автоматично генерираното помощно съобщение на потребителя.
+
+% TODO: add image
+
+\subsubsection{Serde и Toml}
+% TODO: explain what is serde and how it works
+% TODO: explain how toml is integrated with serde
+% TODO: exmaple?
 
 % [x] cargo new test-generator
 % [x] open in text editor
 % [ ] import libraries
+%     [x] clap
+%     [ ] serde
+%     [ ] toml
+%     [ ] genpdf
+%     [ ] egui
+%     [ ] egui-notify
 % [ ] create data structures
 %     [ ] Project
 %         [ ] Question
 %             [ ] SelectionQuestion
 %             [ ] InputQuestion
-% [ ] create command line arguments (clap)
-%     [ ] describe what clap is and how it works
+% [x] create command line arguments (clap)
+%     [x] describe what clap is and how it works
 % [ ] create pdf generator
 %     [ ] create elements
 %         [ ] AlphabeticOrderedList
@@ -79,3 +111,5 @@ cargo new test-generator
 %     [ ] create questions tab
 %     [ ] create configuration tab
 %     [ ] create settings tab
+% [ ] optimizing builds
+% [ ] building for different platforms (MacOS, Windows & Linux)
