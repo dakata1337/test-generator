@@ -1,8 +1,4 @@
-use std::{
-    fs::File,
-    io::Write,
-    time::Duration,
-};
+use std::{fs::File, io::Write, time::Duration};
 
 use crate::{
     data::{GuiState, OpenedTab, Project, Question},
@@ -188,6 +184,11 @@ impl Project {
     fn draw_configuration(&mut self, ui: &mut Ui) {
         add_label("General settings", ui);
         _ = egui::TextEdit::singleline(&mut self.settings.output).show(ui);
+
+        ui.horizontal(|ui| {
+            ui.label("Max questions   ");
+            ui.add(egui::Slider::new(&mut self.settings.max_questions, 1..=100));
+        });
 
         ui.horizontal(|ui| {
             ui.label("Language        ");

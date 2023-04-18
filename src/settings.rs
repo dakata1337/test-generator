@@ -46,16 +46,18 @@ pub struct Settings {
     pub fonts_path: String,
     pub font: String,
     pub output: String,
+    pub max_questions: u8,
 }
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            show_hints: Default::default(),
-            paper_size: Default::default(),
-            language: Default::default(),
-            fonts_path: Default::default(),
-            font: Default::default(),
-            output: "out.pdf".into(),
+            show_hints: true,
+            paper_size: crate::settings::PaperSize::A4,
+            language: crate::settings::Language::English,
+            fonts_path: "./assets/fonts".into(),
+            font: "TimesNewRoman".into(),
+            output: "output.pdf".into(),
+            max_questions: 20,
         }
     }
 }

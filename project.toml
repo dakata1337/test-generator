@@ -5,17 +5,42 @@ language = "Bulgarian"
 fonts_path = "./assets/fonts"
 font = "TimesNewRoman"
 output = "output.pdf"
+max_questions = 5
 
 [header]
 title = "Test Header"
 
 [[questions]]
-question = "New selection question"
+question = "First"
 correct = []
 incorrect = []
 points = 8
 
 [[questions]]
-question = "New input question"
+question = "Second"
 number_of_lines = 9
 points = 8
+
+[[questions]]
+question = "Third"
+correct = []
+incorrect = []
+points = 1
+
+[[questions]]
+question = "Fourth"
+correct = []
+incorrect = []
+points = 1
+
+[[questions]]
+question = "Fifth"
+correct = []
+incorrect = []
+points = 4
+
+[[questions]]
+question = "Sixth"
+correct = []
+incorrect = []
+points = 5

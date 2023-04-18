@@ -122,29 +122,11 @@ pub struct GuiState {
 }
 
 #[allow(dead_code)]
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Deserialize, Serialize, Clone, Default)]
 pub struct Project {
     pub settings: Settings,
     pub header: Header,
     pub questions: Vec<Question>,
     #[serde(skip)]
     pub gui_state: GuiState,
-}
-
-impl Default for Project {
-    fn default() -> Self {
-        Self {
-            settings: Settings {
-                show_hints: true,
-                paper_size: crate::settings::PaperSize::A4,
-                language: crate::settings::Language::English,
-                fonts_path: "./assets/fonts".into(),
-                font: "TimesNewRoman".into(),
-                output: "output.pdf".into(),
-            },
-            header: Default::default(),
-            questions: Default::default(),
-            gui_state: Default::default(),
-        }
-    }
 }

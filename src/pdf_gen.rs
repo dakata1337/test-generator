@@ -63,13 +63,22 @@ fn gen_header(doc: &mut Document, project: &Project) {
     doc.push(Break::new(0.5));
 }
 
-fn gen_questions(doc: &mut Document, project: &Project) {
+fn gen_questions(doc: &mut Document, project: &Project) -> usize {
     doc.set_font_size(12);
     let mut rng = rand::thread_rng();
+    let mut points: usize = 0;
     let language = project.settings.language.clone();
 
-    for (i, question) in project.questions.iter().enumerate() {
+    let mut questions = project.questions.clone();
+    questions.shuffle(&mut rng);
+
+    for (i, question) in questions
+        .iter()
+        .take(project.settings.max_questions as usize)
+        .enumerate()
+    {
         doc.push(gen_points_element(i, question, &language));
+        points += question.get_points() as usize;
 
         match question {
             Question::Selection(question) => {
@@ -97,13 +106,11 @@ fn gen_questions(doc: &mut Document, project: &Project) {
 
         doc.push(Break::new(1));
     }
+
+    points
 }
 
-fn gen_footer(doc: &mut Document, project: &Project) {
-    let max_points: u32 = project
-        .questions
-        .iter()
-        .fold(0, |acc, x| acc + x.get_points() as u32);
+fn gen_footer(doc: &mut Document, project: &Project, max_points: usize) {
     let poins_needed_space = max_points.ilog10() + 2;
 
     let examiner = SplitElement::new(
@@ -139,8 +146,8 @@ pub fn generate_pdf(project: &Project) -> anyhow::Result<Duration> {
     doc.set_page_decorator(decorator);
 
     gen_header(&mut doc, &project);
-    gen_questions(&mut doc, &project);
-    gen_footer(&mut doc, &project);
+    let max_points = gen_questions(&mut doc, &project);
+    gen_footer(&mut doc, &project, max_points);
     // TODO: Docs:
     // Разработка на софтуер - генерално
     // Agile, SCRUM
