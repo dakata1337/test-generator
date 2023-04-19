@@ -106,7 +106,7 @@ that certain fields always have a value.
 
 \section{Оптимизации}
 \begin{figure}[!htb]
-  \includegraphics[scale=0.75]{optimization-size.png}
+  \includegraphics[scale=0.85]{optimization-size.png}
   \centering
   \caption{Разлика в размера при Debug и Release компилиране}
   \label{fig:optimization-size}
@@ -127,13 +127,13 @@ rustup target list
 създава zip архив със файла за изпълнение.
 
 \begin{figure}[!htb]
-  \includegraphics[scale=0.60]{cross-compile.png}
+  \includegraphics[scale=0.75]{cross-compile.png}
   \centering
   \caption{Bash скрипт за комилиране и архивиране на проекта}
   \label{fig:cross-compile}
 \end{figure}
 
-На 3ти ред във фигура \ref{fig:cross-compile} дефинираме функция
+На 3ти ред във Фигура \ref{fig:cross-compile} дефинираме функция
 \textit{build\_for} която приема като аргумени името на toolchain-a и името на
 компилирания файл. Функцията компилира и проекта използвайки всички оптимизации
 и го архивира във файл със същотот име като името на toolchain-a.
