@@ -1,5 +1,6 @@
 use std::time::{Duration, Instant};
 
+use ilog::IntLog;
 use rand::seq::SliceRandom;
 use rckive_genpdf::{
     elements::{Break, PaddedElement, Paragraph, Text},
@@ -111,7 +112,7 @@ fn gen_questions(doc: &mut Document, project: &Project) -> usize {
 }
 
 fn gen_footer(doc: &mut Document, project: &Project, max_points: usize) {
-    let poins_needed_space = max_points.ilog10() + 2;
+    let poins_needed_space = max_points.log10() + 2;
 
     let examiner = SplitElement::new(
         Paragraph::new(format!("{}: ", project.settings.language.get_examiner())),
