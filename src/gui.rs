@@ -90,7 +90,12 @@ impl Project {
             if ui.button("Save Project").clicked() {
                 let mut project_file = File::create("project.toml").unwrap();
                 let str = toml::to_string(self).unwrap();
-                _ = project_file.write(str.as_bytes());
+
+                let mut toasts = self.gui_state.toasts.lock().unwrap();
+                match project_file.write(str.as_bytes()) {
+                    Ok(_) => toasts.success("Project saved"),
+                    Err(err) => toasts.error(&format!("{}", err)),
+                };
             }
             if ui.button("Open Project").clicked() {
                 let content = std::fs::read_to_string("project.toml").unwrap();
@@ -98,6 +103,8 @@ impl Project {
                 for q in self.questions.iter_mut() {
                     q.update_buf_from_title();
                 }
+                let mut toasts = self.gui_state.toasts.lock().unwrap();
+                toasts.success("Project opened");
             }
         });
         ui.end_row();
