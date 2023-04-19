@@ -51,8 +51,48 @@ cargo new test-generator
 
 \subsection{Създаване на структури от данни}
 \subsubsection{Derive macro}
+In Rust, a derive macro is a feature that allows you to automatically generate
+code for a type by annotating it with a special attribute. The annotation tells
+the Rust compiler to generate code for the annotated type based on a predefined
+set of rules.
+
+Derive macros are implemented as procedural macros, which means that they take
+Rust code as input, transform it, and produce new Rust code as output. The
+output can be either an implementation of a trait or a completely new type
+definition.
+
+To use a derive macro in Rust, you simply add the \#[derive] attribute followed
+by the name of the macro to the definition of a struct, enum, or other type.
+For example, to derive the Debug trait for a struct, you can write:
+
+This will automatically generate an implementation of the Debug trait for
+MyStruct, which will print out the values of its fields when the println!()
+macro is used with an instance of the struct.
+
+Derive macros are very powerful and can be used to generate code for many other
+common traits and features, such as PartialEq, Eq, Clone, and Hash. They can
+also be used to generate code for custom traits and features that you define
+yourself.
+
+Overall, derive macros are a powerful feature in Rust that allows you to write
+less code and reduce boilerplate. They are easy to use and can be a great way
+to generate common functionality for your types.
+
 \subsubsection{serde skip}
+When a field is annotated with \#[serde(skip)], serde will not include that
+field in the serialized output, and will skip over it when deserializing input
+data. This can be useful when you have a struct or enum with fields that you do
+not want to include in the serialized output, or when you want to ignore
+certain fields in input data.
+
 \subsubsection{serde default}
+When a field is annotated with \#[serde(default)], serde will use the default
+value of the field if it is missing from the input data. This can be useful
+when you have a struct or enum with optional fields, or when you want to ensure
+that certain fields always have a value.
+
+% TODO: #[serde(default = "default_options")]
+
 \subsubsection{enum Question}
 \begin{figure}[!htb]
   \includegraphics[scale=0.60]{data-questions.png}
