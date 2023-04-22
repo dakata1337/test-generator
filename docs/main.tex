@@ -94,6 +94,13 @@ that certain fields always have a value.
 % TODO: #[serde(default = "default_options")]
 
 \subsubsection{enum Question}
+% TODO: explain why enum and whats the difference between InputQuestion and SelectionQuestion
+Потребителят ще може да избира между два вида въпроси - с отворен отговор
+(Input) и с избиране на подточки (Selection). Разликата между въпросите с
+отворен отговор и избиране, са че за отворения отговор трябва да знаем колко
+реда за отговор да бъдат дадени, а при въпроса с избиране трябва потребителя да
+каже кои са правилните отговорите.
+
 \begin{figure}[!htb]
   \includegraphics[scale=0.60]{data-questions.png}
   \centering
@@ -104,91 +111,8 @@ that certain fields always have a value.
 \subsection{Генериране на PDF}
 \subsection{Създаване на графичен интерфейс}
 
-\section{Оптимизации}
-По подразбиране Rust компилра кода без никакви оптимизации и с много символи
-които помагат за по лесното дебъгване на програмата. Когато компилираме кода
-за употреба от нашите потребители, искаме нашата програма да е възможно
-най-бърза и с най-малък размер. Но преди това трябва да кажем на компилатора
-как по-точно искаме да бъде оптимизирана програмата. Това се случва като добавим
-следните 5 реда в Cargo.toml [Фигура \ref{fig:optimization-config}].
-\begin{itemize}
-    \item strip - премахва символите за повечето дебъгване;
-    \item opt-level - колко пъти компилатора да се пробва да оптимизира кода;
-    \item lto - извършва оптимизации при свързването (linking) на всички библиотеки с програмата;
-    \item codegen-units - колко паралени нишки да бъдат създадени за по-бързо компилиране, когато се използва само 1 нишка кода може да бъде оптимизиран по-добре.
-\end{itemize}
-
-\begin{figure}[!htb]
-  \includegraphics[scale=0.85]{optimization-config.png}
-  \centering
-  \caption{Допълнителни настройки за оптимизиране на кода}
-  \label{fig:optimization-config}
-\end{figure}
-
-За да кажем на компилатора да компилира програвата с всички оптимизации, можем
-да подадем --release флага на компилатора.
-\begin{lstlisting}
-cargo build --release
-\end{lstlisting}
-
-Разликата между двата файла е огромна. Не оптимизирания файл е цели 272
-мегабайта, а оптимизирания едва 10 мегабайта [Фигура
-\ref{fig:optimization-size}]. Освен птимизации за размер, Rust прилага и
-оптимизации за време. 
-
-\begin{figure}[!htb]
-  \includegraphics[scale=0.85]{optimization-size.png}
-  \centering
-  \caption{Разлика в размера при Debug и Release компилиране}
-  \label{fig:optimization-size}
-\end{figure}
-
-Тестовете за време са извършени при 1000 итерации и времето е изчислено
-следно-аретметично и като медиана. Средното времето за изпълнение пада от 20
-милисекунди на по-малко то 2 милисекунди, а медианата от почти 43 милисекунди
-на 3. Между двата начина за тестване, скороста на изпълнение се увеличава
-повече от 10 пъти [Фигура \ref{fig:optimization-time}].
-
-\begin{figure}[!htb]
-  \includegraphics[scale=0.75]{optimization-time.png}
-  \centering
-  \caption{Разлика в скороста на изпълнение при Debug и Release компилиране}
-  \label{fig:optimization-time}
-\end{figure}
-
-
-\section{Компилиране за различни платформи}
-За да компилирате Rust за различни платформи, ще трябва да инсталирате
-toolchain и след това компилираме проекта. За да видим различните видове
-toolchain-и, можем да използваме следната команда:
-\begin{lstlisting}
-rustup target list
-\end{lstlisting}
-Тази команда ще изведе имената за над 90 различни поддържани платформи, но ще
-се фокусираме само върху Windows и Linux. Те отговарят на имената
-"x86-64-pc-windows-gnu" и "x86\_64-unknown-linux-gnu".
-
-За автоматичното компилиране и архивиране на файловете за различните платформи
-можем да създадем един Bash скрипт [Фигура \ref{fig:cross-compile}]. Този
-скрипт автоматично ще инсталира toolchain-a ако вече не е, компилира проекта и
-създава zip архив със файла за изпълнение.
-
-\begin{figure}[!htb]
-  \includegraphics[scale=0.75]{cross-compile.png}
-  \centering
-  \caption{Bash скрипт за комилиране и архивиране на проекта}
-  \label{fig:cross-compile}
-\end{figure}
-
-На 3ти ред във Фигура \ref{fig:cross-compile} дефинираме функция
-\textit{build\_for} която приема като аргумени името на toolchain-a и името на
-компилирания файл. Функцията компилира и проекта използвайки всички оптимизации
-и го архивира във файл със същотот име като името на toolchain-a.
-
-Тези архиви могат да бъдат разпространени в интернет и всеки потребител да
-изтегли съответната версия за неговата платформа и да използва софтуерния
-продукт.
-
+\input{optimizations}
+\input{cross-compile}
 
 % [x] cargo new test-generator
 % [x] open in text editor
