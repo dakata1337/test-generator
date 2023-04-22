@@ -109,7 +109,58 @@ that certain fields always have a value.
 \end{figure}
 
 \subsection{Генериране на PDF}
+За да генерираме PDF файл със genpdf библиотеката, трябва да създадем нов обект
+от тип genpdf::Document. Конструктора на този обект иска да му бъде подадена
+пътека към фонта, който да бъде използван за генерирането. Библиотеката ни
+позволява да добавим и PageDecorator, чрез който можем да добавим поле около
+страницата, заглавия и footer-и за номера на страницата. В този случай ще
+използваме само полето около страницата.
+
+След като сме подготвили обекта, който представлява PDF документа, можем да
+започнем да добавяме нашите собствени елементи. Първите такива елементе ще
+бъдат заглавието на теста, името на ученика, клас и номер в клас.
+Заглавието на теста ще е с най-големия шрифт и ще е центриран, а под него
+името, класа и номер на един ред.
+
+% TODO: explain SplitElement?
+
 \subsection{Създаване на графичен интерфейс}
+Най-важната част от графичният интерфейс са табовете. Чрез тях се избира коя
+част от графичния интерфейс да бъде показана - въпростие, конфигурацията на
+проекта или настройките на графичния интерфейс.
+
+За да знаем кой от трите таба е отворен използваме Rust enum. Egui библиотеката
+ни позволява директно да и подадем глобален обект от този тип и тя автоматично
+ще му смени варината когато наякой бутон е натиснат [Фигура
+\ref{fig:gui-tab-selection}]. А във функцията който изобразява елементите
+използваме match за да извикаме съответната функция за избраният таб [Фигура
+\ref{fig:gui-match-tab}].
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[scale=0.75]{gui-tab-selection.png}
+    \caption{Flower one.}
+    \label{fig:gui-tab-selection}
+\end{figure}
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[scale=0.65]{gui-match-tab.png}
+    \caption{Flower two.}
+    \label{fig:gui-match-tab}
+\end{figure}
+
+\newpage
+
+\subsubsection{Уведомления}
+За да съобщим на потребителя за статуса на програмата ще използваме egui-notify
+библиотеката. Тя предоставя обект, който съдържа няколко метода: info, success, warning и error.
+Тези методи ще покажат на потребителя различните видове уведомления.
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[scale=0.65]{gui-notify.png}
+    \caption{Различните видове уведомления от egui-notify}
+    \label{fig:gui-match-tab}
+\end{figure}
 
 \input{optimizations}
 \input{cross-compile}
@@ -140,8 +191,10 @@ that certain fields always have a value.
 %     [ ] generating questions
 %     [ ] generating footer
 % [ ] create gui
+%     [x] tab selection
 %     [ ] create questions tab
 %     [ ] create configuration tab
 %     [ ] create settings tab
+%     [ ] toasts (egui notify)
 % [x] optimizing builds
 % [x] building for different platforms (MacOS, Windows & Linux)
