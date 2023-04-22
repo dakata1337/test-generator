@@ -193,11 +193,6 @@ impl Project {
         _ = egui::TextEdit::singleline(&mut self.settings.output).show(ui);
 
         ui.horizontal(|ui| {
-            ui.label("Max questions   ");
-            ui.add(egui::Slider::new(&mut self.settings.max_questions, 1..=100));
-        });
-
-        ui.horizontal(|ui| {
             ui.label("Language        ");
             ui.push_id("lang_comboxbox", |ui| {
                 egui::ComboBox::from_label("")
@@ -240,6 +235,22 @@ impl Project {
         ui.horizontal(|ui| {
             ui.label("Font                 ");
             egui::TextEdit::singleline(&mut self.settings.font).show(ui);
+        });
+
+        add_label("Questions settings", ui);
+        ui.horizontal(|ui| {
+            ui.label("Show number of correct answers ");
+            ui.checkbox(&mut self.settings.show_hints, "");
+        });
+
+        ui.horizontal(|ui| {
+            ui.label("Randomize order ");
+            ui.checkbox(&mut self.settings.randomize_questions, "")
+        });
+
+        ui.horizontal(|ui| {
+            ui.label("Max questions      ");
+            ui.add(egui::Slider::new(&mut self.settings.max_questions, 1..=100));
         });
 
         add_label("Header settings", ui);

@@ -6,6 +6,7 @@ fonts_path = "./assets/fonts"
 font = "TimesNewRoman"
 output = "output.pdf"
 max_questions = 5
+randomize_questions = false
 
 [header]
 title = "Test Header"
@@ -44,3 +45,9 @@ question = "Sixth"
 correct = []
 incorrect = []
 points = 5
+
+[[questions]]
+question = "New selection question"
+correct = ["correct 1", "correct 2"]
+incorrect = ["incorrect 1", "incorrect 2"]
+points = 1

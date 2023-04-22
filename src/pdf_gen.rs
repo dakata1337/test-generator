@@ -11,11 +11,27 @@ use rckive_genpdf::{
 use crate::{
     data::{Project, Question},
     pdf_elements::{AlphabeticOrderedList, CharRepeat, SplitElement},
-    settings::Language,
 };
 
-fn gen_points_element(i: usize, question: &Question, language: &Language) -> impl Element {
-    let title = format!("{}. {}", i + 1, question.get_title());
+fn gen_points_element(i: usize, question: &Question, project: &Project) -> impl Element {
+    let show_hint = if let Question::Selection(q) = question {
+        q.correct.len() >= 2 && project.settings.show_hints
+    } else {
+        false
+    };
+
+    let language = &project.settings.language;
+
+    let title = if show_hint {
+        format!(
+            "{}. {} ({})",
+            i + 1,
+            question.get_title(),
+            language.multiple_answers_hint()
+        )
+    } else {
+        format!("{}. {}", i + 1, question.get_title())
+    };
 
     let mut points_element =
         Paragraph::new(format!("{}", language.format_points(question.get_points())));
@@ -71,14 +87,16 @@ fn gen_questions(doc: &mut Document, project: &Project) -> usize {
     let language = project.settings.language.clone();
 
     let mut questions = project.questions.clone();
-    questions.shuffle(&mut rng);
+    if project.settings.randomize_questions {
+        questions.shuffle(&mut rng);
+    }
 
     for (i, question) in questions
         .iter()
         .take(project.settings.max_questions as usize)
         .enumerate()
     {
-        doc.push(gen_points_element(i, question, &language));
+        doc.push(gen_points_element(i, question, &project));
         points += question.get_points() as usize;
 
         match question {

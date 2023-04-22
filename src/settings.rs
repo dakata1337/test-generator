@@ -47,6 +47,7 @@ pub struct Settings {
     pub font: String,
     pub output: String,
     pub max_questions: u8,
+    pub randomize_questions: bool,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -58,6 +59,7 @@ impl Default for Settings {
             font: "TimesNewRoman".into(),
             output: "output.pdf".into(),
             max_questions: 20,
+            randomize_questions: false,
         }
     }
 }
