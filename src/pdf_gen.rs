@@ -158,7 +158,7 @@ pub fn generate_pdf(project: &Project) -> anyhow::Result<Duration> {
 
     let mut doc = rckive_genpdf::Document::new(font_family);
     doc.set_paper_size(project.settings.paper_size);
-    doc.set_title("Demo document");
+    doc.set_title(&project.header.title);
 
     let mut decorator = rckive_genpdf::SimplePageDecorator::new();
     decorator.set_margins(10);
