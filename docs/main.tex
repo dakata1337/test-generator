@@ -50,51 +50,52 @@ cargo new test-generator
 \input{libraries}
 
 \subsection{Създаване на структури от данни}
-\subsubsection{Derive macro}
-In Rust, a derive macro is a feature that allows you to automatically generate
-code for a type by annotating it with a special attribute. The annotation tells
-the Rust compiler to generate code for the annotated type based on a predefined
-set of rules.
+Най-важната част от програмата е състоянието на теста. За да пазим това състояние
+и да го подавеме във функции трубва да създадем структурите от данни, които могат
+да бъдат сериализирани и десериализирани в файлови формати.
 
-Derive macros are implemented as procedural macros, which means that they take
-Rust code as input, transform it, and produce new Rust code as output. The
-output can be either an implementation of a trait or a completely new type
-definition.
+За да кажем на Serde библиотеката как да форматира структурите от данни, можем
+да използваме Deserialize/Serialize Derive макрото предоставено от библиотеката
+[Фигура \ref{fig:data-questions}].
 
-To use a derive macro in Rust, you simply add the \#[derive] attribute followed
-by the name of the macro to the definition of a struct, enum, or other type.
-For example, to derive the Debug trait for a struct, you can write:
+\subsubsection{Какво е Derive макро?}
+В Rust Derive макротата са совойство на езика, което ни позволява автоматично
+да генерирате код за тип, като го анотирате със специален атрибут. Анотацията
+казва на Rust компилаторът автоматично да генерира код за анотирания тип въз
+основа на предварително дефиниран набор от правила.
 
-This will automatically generate an implementation of the Debug trait for
-MyStruct, which will print out the values of its fields when the println!()
-macro is used with an instance of the struct.
+Derive макротата са имплементиране като процедурни макрота, което означава, че
+те вземат Rust код като вход, трансформират го и създайте нов Rust код като
+изход. The изходът може да бъде или реализация на интерфейс, или напълно нов
+тип.
 
-Derive macros are very powerful and can be used to generate code for many other
-common traits and features, such as PartialEq, Eq, Clone, and Hash. They can
-also be used to generate code for custom traits and features that you define
-yourself.
+За да използваме тези макрота просто трябва да анотираме структурите от данни
+с \#[derive(Serialize, Deserialize)] атрибута и Rust автоматично ще ни генерира
+кода за преобразуване на информацията.
 
-Overall, derive macros are a powerful feature in Rust that allows you to write
-less code and reduce boilerplate. They are easy to use and can be a great way
-to generate common functionality for your types.
+Derive макротата са много мощен инструмент който може да бъде използван за генериране
+на код и за други интерфейси като например PartialEq и Eq за сравнение на обекти,
+Clone за копиране на обекти и Hash за използването на обекта в хеш таблици.
 
 \subsubsection{serde skip}
-When a field is annotated with \#[serde(skip)], serde will not include that
-field in the serialized output, and will skip over it when deserializing input
-data. This can be useful when you have a struct or enum with fields that you do
-not want to include in the serialized output, or when you want to ignore
-certain fields in input data.
+Когато едно поле (променлива) е анотирана с \#[serde(skip)], казваме на Serde че
+не искаме това поле да бъде сериализирано\/десериализирано, а да бъде порпуснато.
+Това може да бъде полезно когато не искаме да запазваме някоя променлива във файл,
+като например състоянието на графичния интерфейс.
 
 \subsubsection{serde default}
-When a field is annotated with \#[serde(default)], serde will use the default
-value of the field if it is missing from the input data. This can be useful
-when you have a struct or enum with optional fields, or when you want to ensure
-that certain fields always have a value.
+Когато едно поле (променлива) е анотирана с \#[serde(default)], казваме на
+Serde да използва стойноста по подразбиране на даденото поле ако то не е
+налично във входните данни. Това може да бъде полезно, когато имате структури с
+незадължителни полета или когато искате да гарантирате, че определени полета
+винаги имат стойност. 
 
-% TODO: #[serde(default = "default_options")]
+Тази анотация също ни позволява да подадем име на функция която да се изпълни
+вместо използването на стойноста по подразбиране. Тази функционалност е използвана
+за да бъде пороменена началната стойност на точките за въпросите [Фигура
+\ref{fig:data-questions}]
 
 \subsubsection{enum Question}
-% TODO: explain why enum and whats the difference between InputQuestion and SelectionQuestion
 Потребителят ще може да избира между два вида въпроси - с отворен отговор
 (Input) и с избиране на подточки (Selection). Разликата между въпросите с
 отворен отговор и избиране, са че за отворения отговор трябва да знаем колко
@@ -104,7 +105,7 @@ that certain fields always have a value.
 \begin{figure}[!htb]
   \includegraphics[scale=0.60]{data-questions.png}
   \centering
-  \caption{Въпроси}
+  \caption{Реализация на структурите от данни за въпросите}
   \label{fig:data-questions}
 \end{figure}
 
@@ -204,10 +205,11 @@ that certain fields always have a value.
 %     [ ] egui
 %     [ ] egui-notify
 % [ ] create data structures
-%     [ ] Project
+%     [x] Project
 %         [x] Question
 %             [x] SelectionQuestion
 %             [x] InputQuestion
+%     [ ] 
 % [x] create command line arguments (clap)
 %     [x] describe what clap is and how it works
 % [ ] create pdf generator
@@ -224,6 +226,6 @@ that certain fields always have a value.
 %     [ ] create questions tab
 %     [ ] create configuration tab
 %     [ ] create settings tab
-%     [ ] toasts (egui notify)
+%     [x] toasts (egui notify)
 % [x] optimizing builds
 % [x] building for different platforms (MacOS, Windows & Linux)
