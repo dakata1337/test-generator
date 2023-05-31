@@ -147,6 +147,11 @@ impl Project {
             }
 
             ui.horizontal(|ui| {
+                // TODO: when image is Some - show change and remove button
+                // when image is None show add button
+            });
+
+            ui.horizontal(|ui| {
                 if ui.button("Remove question").clicked() {
                     self.questions.remove(self.gui_state.selected_question);
                     self.gui_state.selected_question = sel_idx.checked_sub(1).unwrap_or(0);

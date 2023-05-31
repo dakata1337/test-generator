@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::{sync::{Arc, Mutex}, path::PathBuf};
 
 use egui_notify::Toasts;
 use serde::{Deserialize, Serialize};
@@ -18,6 +18,7 @@ pub struct SelectionQuestion {
     pub incorrect: Vec<String>,
     #[serde(default = "default_points")]
     pub points: u8,
+    pub image: Option<PathBuf>,
 }
 impl Default for SelectionQuestion {
     fn default() -> Self {
@@ -28,6 +29,7 @@ impl Default for SelectionQuestion {
             correct: vec![],
             incorrect: vec![],
             points: 1,
+            image: None,
         }
     }
 }
@@ -40,6 +42,7 @@ pub struct InputQuestion {
     pub number_of_lines: u16,
     #[serde(default = "default_points")]
     pub points: u8,
+    pub image: Option<PathBuf>,
 }
 impl Default for InputQuestion {
     fn default() -> Self {
@@ -49,6 +52,7 @@ impl Default for InputQuestion {
             question: q,
             number_of_lines: 4,
             points: 1,
+            image: None,
         }
     }
 }
@@ -60,6 +64,18 @@ pub enum Question {
     Input(InputQuestion),
 }
 impl Question {
+    pub fn get_image(&self) -> &Option<PathBuf> {
+        match self {
+            Question::Selection(q) => &q.image,
+            Question::Input(q) => &q.image,
+        }
+    }
+    pub fn set_image(&mut self, path: Option<PathBuf>) {
+        match self {
+            Question::Selection(q) => q.image = path,
+            Question::Input(q) => q.image = path,
+        }
+    }
     pub fn get_title(&self) -> String {
         match self {
             Question::Selection(q) => q.question.clone(),
